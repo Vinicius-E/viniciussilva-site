@@ -1,0 +1,83 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  clientDisplay: string;
+  location: string;
+  summary: string;
+  meta: { label: string; value: string; todo?: boolean }[];
+}
+const { eyebrow, title, clientDisplay, location, summary, meta } = Astro.props;
+---
+
+<header class="case-hero">
+  <div class="wrap">
+    <p class="mono-label">{eyebrow}</p>
+    <h1 class="case-hero__title">{title}</h1>
+    <p class="case-hero__client">{clientDisplay} · {location}</p>
+    <p class="case-hero__summary">{summary}</p>
+
+    <dl class="case-hero__meta">
+      {
+        meta.map((m) => (
+          <div>
+            <dt>{m.label}</dt>
+            <dd>{m.todo ? <span class="todo">{m.value}</span> : m.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</header>
+
+<style>
+  .case-hero {
+    padding-block: clamp(36px, 6vw, 72px) var(--space-6);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+  .case-hero__title {
+    font-size: var(--step-4);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-block: var(--space-3) var(--space-3);
+    max-width: 18ch;
+  }
+  .case-hero__client {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-steel);
+  }
+  .case-hero__summary {
+    margin-top: var(--space-4);
+    font-size: clamp(1rem, 0.95rem + 0.5vw, 1.16rem);
+    color: var(--color-ink-soft);
+    max-width: 58ch;
+  }
+  .case-hero__meta {
+    margin-top: var(--space-6);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    border-top: 1px solid var(--color-hairline-soft);
+    padding-top: var(--space-4);
+  }
+  .case-hero__meta dt {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+  }
+  .case-hero__meta dd {
+    margin-top: 4px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.92rem;
+    line-height: 1.35;
+  }
+  @media (min-width: 720px) {
+    .case-hero__meta {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

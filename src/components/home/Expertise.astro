@@ -1,0 +1,98 @@
+---
+import SectionShell from '../layout/SectionShell.astro';
+
+const groups = [
+  {
+    name: 'Backend Engineering',
+    items: [
+      'Java',
+      'Spring Boot',
+      'REST APIs',
+      'JPA / Hibernate',
+      'PostgreSQL',
+      'SQL',
+      'Microservices',
+      'Quarkus',
+      'Node.js',
+    ],
+  },
+  { name: 'Full-Stack', items: ['Angular', 'React', 'TypeScript'] },
+  { name: 'Cloud & Delivery', items: ['AWS', 'Docker', 'CI/CD', 'Git'] },
+  {
+    name: 'Engineering Practice',
+    items: [
+      'Software architecture',
+      'Design patterns',
+      'OOP',
+      'Unit testing',
+      'Code review',
+      'Observability',
+      'Enterprise application design',
+    ],
+  },
+];
+---
+
+<SectionShell
+  id="expertise"
+  label="Expertise"
+  heading="What I bring to a system."
+  intro="Grouped by capability, ordered by depth."
+>
+  <div class="expertise">
+    {
+      groups.map((g) => (
+        <div class="expertise__group" data-reveal>
+          <h3 class="expertise__name">{g.name}</h3>
+          <ul class="expertise__items">
+            {g.items.map((it) => (
+              <li>{it}</li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</SectionShell>
+
+<style>
+  .expertise {
+    display: grid;
+    gap: var(--space-5) var(--space-6);
+  }
+  .expertise__group {
+    border-top: 1px solid var(--color-hairline);
+    padding-top: var(--space-4);
+  }
+  .expertise__name {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+    font-weight: 600;
+  }
+  .expertise__items {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 0;
+  }
+  .expertise__items li {
+    font-size: 0.92rem;
+    color: var(--color-ink);
+  }
+  .expertise__items li:not(:last-child)::after {
+    content: '·';
+    margin-inline: 10px;
+    color: var(--color-hairline);
+  }
+
+  @media (min-width: 720px) {
+    .expertise {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

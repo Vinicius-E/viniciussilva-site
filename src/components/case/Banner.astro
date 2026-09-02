@@ -1,0 +1,44 @@
+---
+interface Props {
+  tone?: 'warn' | 'note';
+  label?: string;
+}
+const { tone = 'note', label } = Astro.props;
+---
+
+<aside class={`banner banner--${tone}`}>
+  {label && <p class="banner__label">{label}</p>}
+  <div class="banner__body"><slot /></div>
+</aside>
+
+<style>
+  .banner {
+    border-left: 3px solid var(--color-accent);
+    background: var(--color-surface);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: var(--space-4) var(--space-5);
+    margin-block: var(--space-5);
+  }
+  .banner--warn {
+    border-left-color: var(--color-warn);
+    background: var(--color-warn-surface);
+  }
+  .banner__label {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-warn);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .banner--note .banner__label {
+    color: var(--color-accent);
+  }
+  .banner__body :global(p) {
+    max-width: 62ch;
+  }
+  .banner__body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

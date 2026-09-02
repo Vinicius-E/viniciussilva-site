@@ -1,0 +1,32 @@
+{
+  "name": "viniciussilva-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Personal site for Vinicius Silva — Senior Software Engineer. Static Astro build.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "build:fast": "astro build",
+    "preview": "astro preview --host 127.0.0.1 --port 4321",
+    "check": "astro check",
+    "og": "node scripts/gen-og.mjs"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.2.6",
+    "@astrojs/sitemap": "^3.4.1",
+    "@fontsource-variable/archivo": "^5.2.5",
+    "@fontsource/ibm-plex-mono": "^5.2.5",
+    "@fontsource/ibm-plex-sans": "^5.2.5",
+    "astro": "^5.13.0",
+    "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@axe-core/playwright": "^4.13.0",
+    "axe-core": "^4.13.0",
+    "playwright-core": "^1.62.1",
+    "typescript": "^5.8.3"
+  }
+}

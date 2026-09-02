@@ -1,0 +1,56 @@
+---
+/**
+ * Every homepage section passes through here so vertical rhythm, the label +
+ * heading pattern and the anchor id live in one place and the cascade can't
+ * drift. Approved spec §D.
+ */
+interface Props {
+  id: string;
+  label: string;
+  heading: string;
+  /** hide the <h2> visually but keep it for the document outline / SEO */
+  headingHidden?: boolean;
+  intro?: string;
+  tight?: boolean;
+  class?: string;
+}
+const { id, label, heading, headingHidden = false, intro, tight = false, class: klass } = Astro.props;
+---
+
+<section id={id} class={`section${tight ? ' section--tight' : ''}${klass ? ` ${klass}` : ''}`}>
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="mono-label">{label}</p>
+      <h2 class={headingHidden ? 'sr-only' : 'section__heading'}>{heading}</h2>
+      {intro && <p class="section__intro">{intro}</p>}
+    </div>
+    <div class="section__body">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--section-y);
+    border-bottom: 1px solid var(--color-hairline-soft);
+  }
+  .section--tight {
+    padding-block: var(--section-y-tight);
+  }
+  .section__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+  .section__heading {
+    font-size: var(--step-2);
+    font-weight: 700;
+    max-width: 22ch;
+  }
+  .section__intro {
+    color: var(--color-ink-soft);
+    max-width: var(--measure);
+  }
+</style>

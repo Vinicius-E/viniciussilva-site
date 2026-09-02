@@ -1,0 +1,128 @@
+---
+import Todo from '../ui/Todo.astro';
+
+interface Props {
+  company: string;
+  title: string;
+  start: string;
+  end: string | null;
+  context: string;
+  ownership: string;
+  stack: string[];
+}
+const { company, title, start, end, context, ownership, stack } = Astro.props;
+
+const period =
+  start && (end || end === null)
+    ? `${start} – ${end === null ? 'Present' : end}`
+    : start
+      ? `${start} – …`
+      : null;
+---
+
+<article class="xp-entry" data-reveal>
+  <div class="xp-entry__bar" aria-hidden="true"></div>
+  <div class="xp-entry__head">
+    <div>
+      <h3 class="xp-entry__company">{company}</h3>
+      <p class="xp-entry__title">{title}</p>
+    </div>
+    <p class="xp-entry__period">
+      {period ? period : <Todo kind="verify">period from CV</Todo>}
+    </p>
+  </div>
+  <p class="xp-entry__context">{context}</p>
+  <p class="xp-entry__ownership">{ownership}</p>
+  <ul class="xp-entry__stack">
+    {stack.map((s) => <li>{s}</li>)}
+  </ul>
+</article>
+
+<style>
+  .xp-entry {
+    position: relative;
+    padding: var(--space-5) 0;
+    border-top: 1px solid var(--color-hairline-soft);
+  }
+  .xp-entry:first-child {
+    border-top: 0;
+  }
+  .xp-entry__bar {
+    display: none;
+  }
+  .xp-entry__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px var(--space-4);
+    align-items: baseline;
+  }
+  .xp-entry__company {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .xp-entry__title {
+    color: var(--color-ink-soft);
+    font-size: 0.92rem;
+  }
+  .xp-entry__period {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--color-steel);
+    white-space: nowrap;
+  }
+  .xp-entry__context {
+    margin-top: var(--space-3);
+    color: var(--color-ink);
+    max-width: 60ch;
+  }
+  .xp-entry__ownership {
+    margin-top: var(--space-2);
+    color: var(--color-ink-soft);
+    max-width: 60ch;
+  }
+  .xp-entry__stack {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 0;
+  }
+  .xp-entry__stack li {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    color: var(--color-steel);
+  }
+  .xp-entry__stack li:not(:last-child)::after {
+    content: '·';
+    margin-inline: 10px;
+    color: var(--color-hairline);
+  }
+
+  @media (min-width: 1080px) {
+    .xp-entry {
+      padding-left: var(--space-6);
+    }
+    .xp-entry__bar {
+      display: block;
+      position: absolute;
+      left: 0;
+      top: var(--space-5);
+      bottom: var(--space-5);
+      width: 1px;
+      background: var(--color-hairline);
+    }
+    .xp-entry__bar::before {
+      content: '';
+      position: absolute;
+      left: -3px;
+      top: 6px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--color-accent);
+    }
+  }
+</style>

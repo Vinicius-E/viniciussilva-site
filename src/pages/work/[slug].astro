@@ -1,0 +1,245 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CaseHero from '../../components/case/CaseHero.astro';
+import Banner from '../../components/case/Banner.astro';
+import Decisions from '../../components/case/Decisions.astro';
+import ArchitectureDiagram from '../../components/case/ArchitectureDiagram.astro';
+import Gallery from '../../components/case/Gallery.astro';
+import Todo from '../../components/ui/Todo.astro';
+import Button from '../../components/ui/Button.astro';
+import { site } from '../../lib/site';
+import { breadcrumbLd, caseArticleLd, personLd } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const cases = await getCollection('cases', ({ data }) => !data.draft);
+  return cases.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+const path = `/work/${entry.id}`;
+const title = `${data.title} — Case Study · ${site.name}`;
+
+const meta = [
+  { label: 'Role', value: data.role },
+  { label: 'Timeline', value: data.timeline ?? 'to confirm', todo: !data.timeline },
+  { label: 'Platforms', value: data.platforms.join(' · ') },
+  { label: 'Domain', value: data.domain },
+];
+
+const jsonLd = [
+  personLd(),
+  caseArticleLd({ title: data.title, description: data.summary, path }),
+  breadcrumbLd([
+    { name: 'Work', path: '/#work' },
+    { name: data.title, path },
+  ]),
+];
+
+const mdxComponents = { Banner, Decisions, ArchitectureDiagram, Gallery, Todo };
+---
+
+<BaseLayout
+  title={title}
+  description={data.summary}
+  path={path}
+  ogType="article"
+  ogImage="/og/case-industrial.png"
+  jsonLd={jsonLd}
+>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <div class="wrap">
+      <a href="/#work">Work</a> <span aria-hidden="true">/</span>
+      <span aria-current="page">{data.title}</span>
+    </div>
+  </nav>
+
+  <CaseHero
+    eyebrow="Case Study · Industrial Operations"
+    title={data.title}
+    clientDisplay={data.clientDisplay}
+    location={data.location}
+    summary={data.summary}
+    meta={meta}
+  />
+
+  <article class="case wrap">
+    <div class="case-prose">
+      <Content components={mdxComponents} />
+    </div>
+
+    <hr class="case__rule" />
+
+    <div class="case__stack">
+      <h2 class="case__stack-h">Technologies</h2>
+      <dl>
+        {data.stack.backend.length > 0 && (
+          <div><dt>Backend</dt><dd>{data.stack.backend.join(' · ')}</dd></div>
+        )}
+        {data.stack.frontend.length > 0 && (
+          <div><dt>Frontend</dt><dd>{data.stack.frontend.join(' · ')}</dd></div>
+        )}
+        {data.stack.mobile.length > 0 && (
+          <div><dt>Mobile</dt><dd>{data.stack.mobile.join(' · ')}</dd></div>
+        )}
+        {data.stack.delivery.length > 0 ? (
+          <div><dt>Delivery</dt><dd>{data.stack.delivery.join(' · ')}</dd></div>
+        ) : (
+          <div><dt>Delivery</dt><dd><Todo kind="verify">CI/CD &amp; hosting detail</Todo></dd></div>
+        )}
+      </dl>
+    </div>
+
+    <p class="case__confidential">
+      This case omits confidential operational, financial, infrastructure and machine-specific
+      information. Shown with the client's permission.
+    </p>
+
+    <div class="case__nav">
+      <Button href="/#work" variant="link" analytics="case_back">← Back to work</Button>
+      <Button href="/#contact" variant="solid" analytics="cta_case_contact">Get in touch →</Button>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    padding-block: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-steel);
+  }
+  .breadcrumb a {
+    color: var(--color-ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--color-hairline);
+  }
+  .breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration-color: currentColor;
+  }
+  .breadcrumb span[aria-current] {
+    color: var(--color-ink);
+  }
+
+  .case {
+    padding-top: var(--section-y-tight);
+  }
+  /* prose text stays at a readable measure; diagrams / tables / galleries
+     break out to the wider content column */
+  .case-prose {
+    max-width: var(--measure-wide);
+  }
+
+  .case__rule {
+    border: 0;
+    border-top: 1px solid var(--color-hairline);
+    margin-block: var(--space-8);
+    max-width: var(--measure-wide);
+  }
+
+  .case__stack {
+    max-width: 68ch;
+  }
+  .case__stack-h {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+    font-weight: 600;
+  }
+  .case__stack dl {
+    margin-top: var(--space-3);
+    display: grid;
+    gap: var(--space-2);
+  }
+  .case__stack dl div {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: var(--space-4);
+  }
+  .case__stack dt {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-steel);
+    padding-top: 2px;
+  }
+  .case__stack dd {
+    color: var(--color-ink-soft);
+    font-size: 0.9rem;
+  }
+
+  .case__confidential {
+    margin-top: var(--space-6);
+    font-size: var(--step--1);
+    color: var(--color-steel);
+    max-width: 64ch;
+  }
+
+  .case__nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+  }
+</style>
+
+<style is:global>
+  /* MDX narrative styling — scoped to .case-prose */
+  .case-prose > :where(h2) {
+    font-size: var(--step-2);
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-3);
+    scroll-margin-top: 84px;
+  }
+  .case-prose > :where(h2):first-child {
+    margin-top: 0;
+  }
+  .case-prose > :where(h2, h3, p, ul, ol) {
+    max-width: var(--measure);
+  }
+  .case-prose > :where(h3) {
+    font-size: var(--step-1);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-2);
+  }
+  .case-prose :where(p) {
+    margin-bottom: var(--space-4);
+    color: var(--color-ink-soft);
+  }
+  .case-prose :where(strong) {
+    color: var(--color-ink);
+  }
+  .case-prose > :where(ul, ol) {
+    margin-bottom: var(--space-4);
+    padding-left: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .case-prose > :where(ul, ol) > :where(li) {
+    position: relative;
+    padding-left: 22px;
+    color: var(--color-ink-soft);
+  }
+  .case-prose > :where(ul, ol) > :where(li)::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--color-accent);
+  }
+  .case-prose > :where(ul.check) > :where(li)::before {
+    content: '✓';
+    color: var(--color-ok);
+    font-weight: 700;
+  }
+</style>

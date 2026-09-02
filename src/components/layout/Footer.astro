@@ -1,0 +1,128 @@
+---
+import { site, mailtoHref } from '../../lib/site';
+import FalconMark from '../brand/FalconMark.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__brand">
+      <FalconMark size={18} />
+      <div>
+        <p class="site-footer__name">{site.practice}</p>
+        <p class="site-footer__tag">{site.practiceTagline}</p>
+      </div>
+    </div>
+
+    <nav class="site-footer__links" aria-label="Footer">
+      <a href={mailtoHref} data-analytics="contact_email">Email</a>
+      <a href={site.socials.linkedin} target="_blank" rel="noopener" data-analytics="out_linkedin"
+        >LinkedIn <span aria-hidden="true">↗</span></a
+      >
+      <a href={site.socials.github} target="_blank" rel="noopener" data-analytics="out_github"
+        >GitHub <span aria-hidden="true">↗</span></a
+      >
+      <a href={site.resumePath} target="_blank" rel="noopener" data-analytics="resume_download"
+        >Résumé <span aria-hidden="true">↗</span></a
+      >
+    </nav>
+
+    <p class="site-footer__legal">
+      © {year} {site.legalName} · Based in {site.location.country} ({site.location.timezone}) · Built with
+      Astro
+    </p>
+
+    <a href="#top" class="site-footer__top">Back to top <span aria-hidden="true">↑</span></a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-hairline);
+    padding-block: var(--space-8) var(--space-7);
+    margin-top: var(--space-9);
+  }
+  .site-footer__inner {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .site-footer__brand {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .site-footer__name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+  }
+  .site-footer__tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--color-steel);
+    margin-top: 2px;
+  }
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-5);
+  }
+  .site-footer__links a {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-soft);
+    text-decoration: none;
+  }
+  .site-footer__links a:hover {
+    color: var(--color-accent);
+  }
+  .site-footer__legal {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    color: var(--color-steel);
+    max-width: none;
+  }
+  .site-footer__top {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    text-decoration: none;
+    justify-self: start;
+  }
+  .site-footer__top:hover {
+    color: var(--color-accent);
+  }
+
+  @media (min-width: 900px) {
+    .site-footer__inner {
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        'brand links'
+        'legal top';
+      align-items: start;
+    }
+    .site-footer__brand {
+      grid-area: brand;
+    }
+    .site-footer__links {
+      grid-area: links;
+      justify-content: flex-end;
+    }
+    .site-footer__legal {
+      grid-area: legal;
+      align-self: end;
+    }
+    .site-footer__top {
+      grid-area: top;
+      justify-self: end;
+      align-self: end;
+    }
+  }
+</style>

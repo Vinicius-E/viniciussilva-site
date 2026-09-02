@@ -1,0 +1,109 @@
+---
+import { getCollection } from 'astro:content';
+import SectionShell from '../layout/SectionShell.astro';
+import WorkCard from './WorkCard.astro';
+import Todo from '../ui/Todo.astro';
+
+const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const featured = cases.find((c) => c.data.featured) ?? cases[0];
+---
+
+<SectionShell
+  id="work"
+  label="Selected Work"
+  heading="Systems built and owned end to end."
+  intro="A few projects that show how I work — from the operational problem to the running system. Selected, not exhaustive."
+>
+  {
+    featured && (
+      <WorkCard
+        featured
+        eyebrow={`${featured.data.clientDisplay} · ${featured.data.location}`}
+        title={featured.data.title}
+        body={featured.data.summary}
+        meta={`Role: ${featured.data.role}  ·  ${[
+          ...featured.data.stack.backend.slice(0, 3),
+          ...featured.data.stack.frontend.slice(0, 1),
+          ...featured.data.stack.mobile.slice(0, 1),
+          ...featured.data.stack.frontend.slice(1, 2),
+        ].join(' · ')}`}
+        href={`/work/${featured.id}`}
+        slug={featured.id}
+      />
+    )
+  }
+
+  {/* Optional cards 2–3 — see spec §I open question. Shown as marked placeholders
+      so the decision (ship / hold) can be made from the preview. */}
+  <div class="work-more">
+    <article class="work-mini" data-reveal>
+      <p class="work-mini__eyebrow">
+        Enterprise SaaS · GED / ECM domain — <Todo kind="nda">confirm what can be shown publicly</Todo>
+      </p>
+      <h3 class="work-mini__title">Document &amp; Signature Platform</h3>
+      <p class="work-mini__body">
+        Anonymised. Backend and frontend feature delivery in a regulated document domain (Senior
+        Sistemas). Deep page optional.
+      </p>
+    </article>
+    <article class="work-mini" data-reveal>
+      <p class="work-mini__eyebrow">
+        Enterprise &amp; public-sector delivery — <Todo kind="scope">confirm scope that can be described</Todo>
+      </p>
+      <h3 class="work-mini__title">Multi-client Engineering</h3>
+      <p class="work-mini__body">
+        Short entry. Enterprise applications across the stack, including an international,
+        English-speaking context (Bosch, via Cast Group).
+      </p>
+    </article>
+  </div>
+
+  <p class="work-note">
+    Client details and screenshots are shown with permission. Confidential operational data is
+    omitted or anonymised.
+  </p>
+</SectionShell>
+
+<style>
+  .work-more {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+  .work-mini {
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    padding: var(--space-5);
+  }
+  .work-mini__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+    line-height: 1.7;
+  }
+  .work-mini__title {
+    font-size: 1.05rem;
+    margin-top: 6px;
+  }
+  .work-mini__body {
+    color: var(--color-ink-soft);
+    font-size: 0.92rem;
+    margin-top: 8px;
+  }
+  .work-note {
+    margin-top: var(--space-5);
+    color: var(--color-steel);
+    font-size: var(--step--1);
+    max-width: 60ch;
+  }
+  @media (min-width: 760px) {
+    .work-more {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

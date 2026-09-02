@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- PLACEHOLDER favicon. Replace with the official falcon mark (see
+       src/components/brand/FalconMark.astro). -->
+  <rect width="32" height="32" rx="6" fill="#0e0d10"/>
+  <path d="M16 5 L27 16 L16 27 L5 16 Z" fill="none" stroke="#e4562a" stroke-width="2"/>
+  <path d="M16 5 L16 27 M5 16 L27 16" stroke="#e4562a" stroke-width="2" opacity="0.35"/>
+</svg>

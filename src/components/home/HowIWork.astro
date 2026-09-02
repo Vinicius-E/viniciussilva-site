@@ -1,0 +1,92 @@
+---
+import SectionShell from '../layout/SectionShell.astro';
+
+const steps = [
+  {
+    n: '01',
+    name: 'Understand',
+    line: 'Start from the operational problem and the people who have it, not the feature list.',
+  },
+  {
+    n: '02',
+    name: 'Design',
+    line: 'Choose the simplest architecture that satisfies the real requirements, and make the trade-offs explicit.',
+  },
+  {
+    n: '03',
+    name: 'Build',
+    line: 'Implement in small, verifiable increments, with tests that prove behaviour.',
+  },
+  {
+    n: '04',
+    name: 'Validate',
+    line: 'Check against the requirements and real usage; fix what the feedback surfaces.',
+  },
+  {
+    n: '05',
+    name: 'Evolve',
+    line: 'Keep the system maintainable as it grows, and treat the roadmap as hypotheses, not promises.',
+  },
+];
+---
+
+<SectionShell
+  id="approach"
+  label="How I Work"
+  heading="One loop, whether it's a team's codebase or a client's problem."
+>
+  <ol class="how">
+    {
+      steps.map((s) => (
+        <li class="how__step" data-reveal>
+          <span class="how__n">{s.n}</span>
+          <h3 class="how__name">{s.name}</h3>
+          <p class="how__line">{s.line}</p>
+        </li>
+      ))
+    }
+  </ol>
+</SectionShell>
+
+<style>
+  .how {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--color-hairline);
+  }
+  .how__step {
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--color-hairline-soft);
+  }
+  .how__n {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-accent);
+  }
+  .how__name {
+    font-size: 1.02rem;
+    margin-top: 4px;
+  }
+  .how__line {
+    color: var(--color-ink-soft);
+    margin-top: 6px;
+    max-width: 46ch;
+  }
+
+  @media (min-width: 900px) {
+    .how {
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 0;
+    }
+    .how__step {
+      padding: var(--space-4) var(--space-4) var(--space-5) 0;
+      border-bottom: 0;
+      border-top: 2px solid var(--color-hairline);
+    }
+    .how__line {
+      font-size: 0.88rem;
+    }
+  }
+</style>

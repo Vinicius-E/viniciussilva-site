@@ -1,0 +1,36 @@
+---
+import Button from '../ui/Button.astro';
+---
+
+<section class="closing" aria-label="Get in touch">
+  <div class="wrap closing__inner" data-reveal>
+    <p class="closing__line">
+      If any of this matches what you're hiring for or building, the next step is a short
+      conversation.
+    </p>
+    <Button href="/#contact" variant="solid" analytics="cta_footer_contact">
+      Start a conversation
+    </Button>
+  </div>
+</section>
+
+<style>
+  .closing {
+    border-bottom: 1px solid var(--color-hairline-soft);
+    padding-block: var(--section-y);
+  }
+  .closing__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+  }
+  .closing__line {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--step-1);
+    letter-spacing: -0.01em;
+    max-width: 34ch;
+  }
+</style>

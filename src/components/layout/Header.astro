@@ -1,0 +1,111 @@
+---
+import { primaryNav, site } from '../../lib/site';
+import FalconMark from '../brand/FalconMark.astro';
+import ThemeToggle from './ThemeToggle.astro';
+---
+
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a href="/" class="site-header__id" aria-label={`${site.name} — home`}>
+      <FalconMark size={20} />
+      <span class="site-header__name">Vinicius Silva</span>
+    </a>
+
+    <nav class="site-header__nav" aria-label="Primary">
+      {primaryNav.map((item) => (
+        <a href={item.href}>{item.label}</a>
+      ))}
+    </nav>
+
+    <div class="site-header__actions">
+      <ThemeToggle />
+      <a
+        class="site-header__resume"
+        href={site.resumePath}
+        target="_blank"
+        rel="noopener"
+        data-analytics="resume_download"
+      >
+        Résumé <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: color-mix(in srgb, var(--color-ground) 88%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-hairline);
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 56px;
+    padding-block: 8px;
+  }
+  .site-header__id {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+  .site-header__name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.005em;
+  }
+  .site-header__nav {
+    display: none;
+    gap: var(--space-5);
+  }
+  .site-header__nav a {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    text-decoration: none;
+  }
+  .site-header__nav a:hover {
+    color: var(--color-accent);
+  }
+  .site-header__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .site-header__resume {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    text-decoration: none;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-pill);
+    padding: 8px 14px;
+    min-height: 36px;
+  }
+  .site-header__resume:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  @media (min-width: 700px) {
+    .site-header__nav {
+      display: inline-flex;
+    }
+  }
+</style>

@@ -1,0 +1,88 @@
+---
+interface Decision {
+  decision: string;
+  why: string;
+  tradeoff: string;
+  reconsider: string;
+}
+interface Props {
+  items: Decision[];
+}
+const { items } = Astro.props;
+---
+
+<div class="decisions scroll-x" tabindex="0" role="region" aria-label="Engineering decisions table">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Decision</th>
+        <th scope="col">Why</th>
+        <th scope="col">Trade-off accepted</th>
+        <th scope="col">Reconsider when</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        items.map((d) => (
+          <tr>
+            <th scope="row">{d.decision}</th>
+            <td>{d.why}</td>
+            <td>{d.tradeoff}</td>
+            <td>{d.reconsider}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .decisions {
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    margin-block: var(--space-5);
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 760px;
+    font-size: 0.88rem;
+    table-layout: fixed;
+  }
+  th,
+  td {
+    text-align: left;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--color-hairline-soft);
+    vertical-align: top;
+    color: var(--color-ink-soft);
+  }
+  thead th:nth-child(1),
+  tbody th {
+    width: 24%;
+  }
+  thead th:nth-child(2) {
+    width: 30%;
+  }
+  thead th:nth-child(3) {
+    width: 26%;
+  }
+  thead th {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    background: var(--color-surface);
+    font-weight: 600;
+  }
+  tbody th[scope='row'] {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+</style>

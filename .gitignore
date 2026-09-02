@@ -1,0 +1,33 @@
+# build output
+dist/
+.output/
+
+# astro
+.astro/
+
+# dependencies
+node_modules/
+
+# generated OG images are committed on purpose (see scripts/gen-og.mjs) — do NOT ignore public/og
+
+# logs
+npm-debug.log*
+*.log
+
+# local review artefacts
+.review/
+lh-*.json
+lh-*.html
+lh-home
+lh-case
+
+# editor / os
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# env
+.env
+.env.production
+.dev.vars

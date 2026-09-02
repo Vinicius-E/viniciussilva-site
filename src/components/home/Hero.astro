@@ -1,0 +1,88 @@
+---
+import Button from '../ui/Button.astro';
+import { site } from '../../lib/site';
+---
+
+<section class="hero">
+  <div class="wrap hero__inner">
+    <p class="eyebrow hero__eyebrow" data-reveal>Senior Software Engineer</p>
+    <h1 class="hero__title" data-reveal style="--reveal-delay: 60ms">
+      Engineering reliable software for real-world operations.
+    </h1>
+    <p class="hero__sub" data-reveal style="--reveal-delay: 120ms">
+      Senior Software Engineer focused on Java/Spring backend engineering, modern full-stack
+      development and end-to-end product ownership.
+    </p>
+
+    <div class="hero__ctas" data-reveal style="--reveal-delay: 180ms">
+      <Button href="/#work" variant="solid" analytics="cta_hero_work">View selected work</Button>
+      <Button href="/#contact" variant="outline" analytics="cta_hero_contact">Get in touch</Button>
+      <Button href={site.resumePath} variant="link" external download analytics="resume_download">
+        Résumé (PDF)
+      </Button>
+    </div>
+
+    <p class="hero__availability">{site.availability}</p>
+    <p class="hero__location">{site.location.label}</p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    border-bottom: 1px solid var(--color-hairline);
+    padding-block: clamp(44px, 8vw, 92px) clamp(32px, 6vw, 60px);
+  }
+  .hero__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .hero__eyebrow {
+    color: var(--color-accent);
+    letter-spacing: 0.18em;
+  }
+  .hero__title {
+    font-size: var(--step-4);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    max-width: 20ch;
+    margin-block: var(--space-4) var(--space-5);
+  }
+  .hero__sub {
+    font-size: clamp(1rem, 0.95rem + 0.6vw, 1.18rem);
+    color: var(--color-ink-soft);
+    max-width: 56ch;
+  }
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    margin-top: var(--space-6);
+  }
+  .hero__availability {
+    margin-top: var(--space-6);
+    max-width: 62ch;
+    color: var(--color-ink-soft);
+    font-size: var(--step--1);
+  }
+  .hero__location {
+    margin-top: var(--space-2);
+    color: var(--color-steel);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 480px) {
+    .hero__ctas > :global(.btn:not(.btn--link)) {
+      flex: 1 1 100%;
+      justify-content: center;
+    }
+  }
+
+  /* stagger the hero reveal (see base.css .js [data-reveal]) */
+  :global(.js) .hero [data-reveal] {
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+</style>

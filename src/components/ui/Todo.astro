@@ -1,0 +1,14 @@
+---
+/**
+ * Visible placeholder marker. Intentionally rendered in every environment
+ * (including this preview) so unfilled content is impossible to miss during
+ * review. Never fabricate the real value — leave the Todo.
+ */
+interface Props {
+  /** short machine tag, e.g. "verify", "asset", "contact" */
+  kind?: string;
+}
+const { kind } = Astro.props;
+---
+
+<mark class="todo" data-kind={kind}><slot /></mark>

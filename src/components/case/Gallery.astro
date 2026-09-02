@@ -1,0 +1,92 @@
+---
+/**
+ * Screenshot gallery. Renders real <img> when a cleared image path is given,
+ * otherwise a labelled placeholder tile. No fabricated screenshots.
+ *
+ * TODO[asset]: when cleared screenshots exist, drop them in
+ * src/assets/cases/wester/ and pass { src, alt, caption }. A native <dialog>
+ * lightbox (the one sanctioned interactive island, spec §D) can be added then.
+ */
+interface Shot {
+  src?: string | null;
+  alt: string;
+  caption: string;
+}
+interface Props {
+  items: Shot[];
+}
+const { items } = Astro.props;
+---
+
+<div class="gallery">
+  {
+    items.map((s) => (
+      <figure class="gallery__item">
+        {s.src ? (
+          <img src={s.src} alt={s.alt} loading="lazy" decoding="async" />
+        ) : (
+          <div class="gallery__ph" role="img" aria-label={`Placeholder for: ${s.alt}`}>
+            <span>{s.alt}</span>
+            <span class="gallery__todo">screenshot pending</span>
+          </div>
+        )}
+        <figcaption>{s.caption}</figcaption>
+      </figure>
+    ))
+  }
+</div>
+
+<style>
+  .gallery {
+    display: grid;
+    gap: var(--space-4);
+    margin-block: var(--space-6);
+    grid-template-columns: 1fr;
+  }
+  .gallery__item {
+    display: grid;
+    gap: 8px;
+  }
+  .gallery__item img,
+  .gallery__ph {
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-md);
+    width: 100%;
+  }
+  .gallery__ph {
+    aspect-ratio: 16 / 10;
+    background: repeating-linear-gradient(
+      45deg,
+      var(--color-hairline-soft),
+      var(--color-hairline-soft) 6px,
+      transparent 6px,
+      transparent 13px
+    );
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--color-steel);
+    text-align: center;
+    padding: var(--space-4);
+  }
+  .gallery__todo {
+    font-size: 0.64rem;
+    color: var(--color-warn);
+    border: 1px dashed var(--color-warn);
+    border-radius: var(--radius-sm);
+    padding: 2px 8px;
+  }
+  .gallery figcaption {
+    font-size: var(--step--1);
+    color: var(--color-steel);
+  }
+  @media (min-width: 620px) {
+    .gallery {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

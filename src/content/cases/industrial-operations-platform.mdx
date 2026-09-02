@@ -1,0 +1,243 @@
+---
+title: Industrial Operations Platform
+clientDisplay: Industrial Manufacturing Client
+location: Santa Catarina, Brazil
+summary: >-
+  A warehouse and operations platform for an injection-moulding manufacturer. It
+  began as a solution for managing storage and the finishing area and grew into
+  an operational system spanning web and mobile.
+role: Sole engineer, discovery to production
+timeline: null
+platforms:
+  - Web
+  - iOS
+  - Android
+domain: Manufacturing / warehouse operations
+order: 1
+featured: true
+draft: false
+stack:
+  backend:
+    - Java 21
+    - Spring Boot
+    - PostgreSQL
+    - Flyway
+    - JWT
+  frontend:
+    - React
+    - TypeScript
+  mobile:
+    - React Native
+    - Expo
+    - Zustand
+    - Zod
+  delivery: []
+screenshots:
+  - { src: null, alt: "2D warehouse map", caption: "2D layout — locations rendered from the configurable structure." }
+  - { src: null, alt: "3D warehouse view", caption: "3D view — the same structure data, for spatial orientation." }
+  - { src: null, alt: "Mobile app on the floor", caption: "Mobile — movements recorded where the work happens." }
+  - { src: null, alt: "Movement history and audit", caption: "History — every movement, with who and when." }
+today:
+  - Configurable location structures with parameterisation
+  - Material and mould location tracking
+  - Auditable movement history
+  - Role-based access and permissions
+  - Reports with filtering and export (PDF, CSV, Excel)
+  - Attention / low-stock alerts
+  - 2D and 3D visualisation of the physical layout
+  - Web and mobile clients with synchronisation
+  - Real-time updates across clients
+planned:
+  - Acquisition of physical signals from injection machines (ADAM / WISE devices)
+  - Production states, cycles and alarms
+  - Shop-floor dashboards
+  - PCP / production-order integration
+---
+
+import Banner from '../../components/case/Banner.astro';
+import Decisions from '../../components/case/Decisions.astro';
+import ArchitectureDiagram from '../../components/case/ArchitectureDiagram.astro';
+import Gallery from '../../components/case/Gallery.astro';
+import Todo from '../../components/ui/Todo.astro';
+
+## Context
+
+The client manufactures using injection moulding. Materials and moulds move
+through storage and a finishing area in high volume, and their location was
+tracked informally — spreadsheets, labels, and the memory of the people who
+work there. That works until it doesn't: as volume grew, finding a specific
+material or mould, knowing what had happened to it, and holding movements
+accountable all became slower and less reliable.
+
+The engagement started narrow — manage storage and the finishing area — and
+was deliberately kept that way until the core model proved itself. It then
+grew, one validated step at a time, into an operational platform.
+
+## Problem
+
+I framed the problem in three layers, because each one pulls the design in a
+different direction:
+
+- **Operational.** Where is a given material or mould right now? What happened
+  to it — every move, in order? Who moved it, and from where to where?
+- **Structural.** The physical layout is not fixed. Rows are added, levels are
+  re-sized, whole areas are re-purposed. The system has to absorb that without
+  a code change or a developer in the loop.
+- **Organisational.** Several roles touch the same data with different rights,
+  and every change has to leave an auditable trail.
+
+## Constraints
+
+- **One engineer, working directly with the stakeholders.** Every decision had
+  to be legible to me later and reversible if it turned out wrong. No room for
+  architecture that needs a team to maintain.
+- **It runs on a factory floor.** Mobile connectivity is intermittent, devices
+  are shared, and the people using it are operators, not analysts. The UI has
+  to be fast, forgiving, and hard to get wrong; the mobile client has to
+  tolerate a bad network.
+- **The floor changes faster than software releases.** Configuration has to win
+  over code wherever a layout or a process might shift.
+- **Auditability is not negotiable.** "What happened to this?" must always have
+  a complete, ordered answer.
+- **It has to stay cheap to run.** A small managed database and static hosting —
+  no heavy infrastructure to justify.
+
+## Approach
+
+- **Model the warehouse as a tree the client owns:** area → row → grid → level →
+  slot, with structure *types* so different physical layouts share one model.
+  Operations staff re-shape the tree themselves.
+- **Make every state change an event.** Current position and full history are
+  both derived from an append-only movement log — there is one source of truth
+  for "what happened".
+- **Keep two read paths:** fast lookups for day-to-day operations, and
+  paginated, filterable reporting with export for the office.
+- **Give the layout a visual form** — 2D for speed, 3D for spatial understanding
+  — both driven by the same structure data, not a separate drawing.
+- **Deliver it where the work is:** web for administration and reporting, a
+  mobile client for the floor, with synchronisation and explicit handling of
+  conflicting edits.
+
+## Architecture
+
+<ArchitectureDiagram />
+
+The clients are thin. The domain rules — what a valid structure looks like,
+what a valid movement is, who may do what — live in one place, in the API's
+service layer, and are covered by tests. Everything the floor and the office
+see is the same data, kept in step by a realtime channel rather than by
+people refreshing.
+
+## Engineering decisions
+
+<Decisions
+  items={[
+    {
+      decision: "Model the location hierarchy as data, not as a fixed schema per layout",
+      why: "Operations can re-parameterise areas, rows, levels and slots themselves — no deployment, no developer.",
+      tradeoff: "Richer validation and recursive queries; the model is more abstract to reason about.",
+      reconsider: "If layouts stabilise for good and the flexibility goes unused, a flatter model would be simpler.",
+    },
+    {
+      decision: "Optimistic locking on stock items (a version on each row), not pessimistic locks",
+      why: "Several devices edit concurrently without holding database locks; a conflict surfaces as a 409 the client resolves.",
+      tradeoff: "Clients must implement version-conflict handling and a retry/merge UX.",
+      reconsider: "If write contention concentrates on a few hot rows, a queue or per-aggregate serialisation may beat retries.",
+    },
+    {
+      decision: "Append-only movement history as the source of truth",
+      why: "Complete audit trail and time-travel; current position is a projection, never a value that can be silently overwritten.",
+      tradeoff: "The event table grows; reporting needs indexed projections now and an archival strategy later.",
+      reconsider: "At data volumes where projection queries degrade despite indexing.",
+    },
+    {
+      decision: "Server-pushed events over WebSocket for cross-client sync",
+      why: "The floor and the office converge on the same state within seconds, without polling.",
+      tradeoff: "A stateful channel to run and scale; needs reconnection and backfill handling.",
+      reconsider: "If near-real-time turns out not to matter operationally, periodic polling is less to operate.",
+    },
+    {
+      decision: "Stateless JWT auth with profile-based RBAC",
+      why: "Simple horizontal scaling and a clear per-role permission model.",
+      tradeoff: "Token revocation is coarse; a permission change takes effect on the next token refresh.",
+      reconsider: "If instant, fine-grained revocation becomes a requirement.",
+    },
+  ]}
+/>
+
+## Implementation
+
+Work went in small, verifiable slices, each with tests that prove a behaviour
+rather than chase a coverage number:
+
+- **Domain rules in the service layer**, with contract tests around structure
+  validation, movement integrity, concurrency, and authorization boundaries.
+- **The optimistic-locking contract is verified by tests** that simulate two
+  clients editing the same item, asserting that the second gets a conflict
+  rather than a lost update.
+- **Baseline hardening** from the start: login rate limiting, a locked-down
+  CORS policy with correct preflight handling, and authorization checks on
+  every write endpoint.
+- **Every schema change is a migration.** The database shape is versioned and
+  reproducible from zero.
+- **The mobile client keeps local state** and reconciles on reconnect, so an
+  operator can keep working through a network gap.
+
+<Banner tone="note" label="Why this matters">
+This page is about how the system is *reasoned about* — the model, the
+trade-offs, the failure modes that were designed for. The framework list is
+the least interesting part.
+</Banner>
+
+## Current capabilities
+
+What is running in production today:
+
+<ul class="check">
+  <li>Configurable location structures with parameterisation (area → row → grid → level → slot)</li>
+  <li>Material and mould location tracking</li>
+  <li>Auditable movement history — every move, with who and when</li>
+  <li>Role-based access and permissions</li>
+  <li>Reports with filtering and export to PDF, CSV and Excel</li>
+  <li>Attention alerts for stock that needs review</li>
+  <li>2D and 3D visualisation of the physical layout, from the same structure data</li>
+  <li>Web and mobile clients with synchronisation</li>
+  <li>Real-time updates across connected clients</li>
+</ul>
+
+## Selected views
+
+<Gallery
+  items={[
+    { src: null, alt: "2D warehouse map", caption: "2D layout — locations rendered from the configurable structure." },
+    { src: null, alt: "3D warehouse view", caption: "3D view — the same structure data, for spatial orientation." },
+    { src: null, alt: "Mobile app on the floor", caption: "Mobile — movements recorded where the work happens." },
+    { src: null, alt: "Movement history and audit", caption: "History — every movement, with who and when." },
+  ]}
+/>
+
+## Outcome
+
+The operations team can locate materials and moulds, see exactly how stock has
+moved and who moved it, and re-shape the storage structure themselves as the
+floor changes — without waiting on a release. The platform is in active use
+and continues to evolve with the operation.
+
+<Todo kind="verify">Quantified outcome — only if Vinicius provides and validates specific, non-confidential figures. None are assumed here.</Todo>
+
+## Future evolution
+
+<Banner tone="warn" label="Not in production">
+The following is being explored with the client. It is **not** part of the
+running system and is not presented as a delivered capability.
+</Banner>
+
+- Acquisition of physical signals directly from the injection machines
+  (ADAM / WISE devices)
+- Production states, cycles and alarms derived from those signals
+- Shop-floor dashboards
+- Integration with production planning (PCP) and production orders
+
+The current architecture — events as the source of truth, a realtime channel
+already in place, a configurable structure model — was chosen partly so this
+direction stays open without a rewrite. That is a design intent, not a promise.

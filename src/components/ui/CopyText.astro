@@ -1,0 +1,98 @@
+---
+/**
+ * Shows a string and lets the visitor copy it. Progressive: it's a real
+ * mailto link first; the copy button is added only if the Clipboard API
+ * is available. ~12 lines of inline JS, no framework.
+ */
+interface Props {
+  value: string;
+  href?: string;
+  analytics?: string;
+  analyticsCopy?: string;
+}
+const { value, href, analytics, analyticsCopy } = Astro.props;
+---
+
+<span class="copytext" data-value={value}>
+  {
+    href ? (
+      <a href={href} class="copytext__value" data-analytics={analytics}>
+        {value}
+      </a>
+    ) : (
+      <span class="copytext__value">{value}</span>
+    )
+  }
+  <button type="button" class="copytext__btn" hidden data-analytics={analyticsCopy}>
+    <span aria-hidden="true">⧉</span> <span class="copytext__btnlabel">Copy</span>
+  </button>
+</span>
+
+<style>
+  .copytext {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .copytext__value {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--color-ink);
+    text-decoration: none;
+    word-break: break-all;
+  }
+  a.copytext__value:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .copytext__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    background: transparent;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-sm);
+    padding: 4px 9px;
+    min-height: 32px;
+    cursor: pointer;
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .copytext__btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+  .copytext__btn.is-done {
+    border-color: var(--color-ok);
+    color: var(--color-ok);
+  }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('.copytext')) {
+    const btn = root.querySelector<HTMLButtonElement>('.copytext__btn');
+    const label = root.querySelector<HTMLElement>('.copytext__btnlabel');
+    const value = root.dataset.value || '';
+    if (!btn || !navigator.clipboard) continue;
+    btn.hidden = false;
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(value);
+        btn.classList.add('is-done');
+        if (label) label.textContent = 'Copied';
+        window.setTimeout(() => {
+          btn.classList.remove('is-done');
+          if (label) label.textContent = 'Copy';
+        }, 2000);
+      } catch {
+        /* clipboard blocked — the value is still visible to select manually */
+      }
+    });
+  }
+</script>

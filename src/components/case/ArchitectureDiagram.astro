@@ -1,0 +1,164 @@
+---
+/**
+ * Architecture at a glance. Built as accessible HTML (real text, no image),
+ * theme-aware through tokens, scrolls inside its own container on narrow
+ * viewports. Reflects the system described in the case — no infrastructure
+ * specifics, no confidential detail.
+ */
+---
+
+<figure class="arch">
+  <div class="arch__scroll scroll-x" tabindex="0" role="region" aria-label="System architecture diagram">
+    <div class="arch__grid">
+      <div class="arch__col">
+        <p class="arch__coltitle">Clients</p>
+        <div class="arch__node">
+          <b>Web app</b>
+          <span>React · TypeScript — administration, parameterisation, reporting</span>
+        </div>
+        <div class="arch__node">
+          <b>Mobile app</b>
+          <span>React Native · Expo · Zustand · Zod — shop-floor use, sync</span>
+        </div>
+      </div>
+
+      <div class="arch__link" aria-hidden="true">
+        <span>HTTPS / REST</span>
+        <span class="arch__link-alt">WebSocket ↑ realtime</span>
+      </div>
+
+      <div class="arch__col">
+        <p class="arch__coltitle">Application</p>
+        <div class="arch__node arch__node--accent">
+          <b>REST API</b>
+          <span>Spring Boot · Java 21 — domain rules, validation</span>
+        </div>
+        <div class="arch__node">
+          <b>Auth &amp; access</b>
+          <span>JWT (stateless) · profile-based RBAC · login rate limiting</span>
+        </div>
+        <div class="arch__node">
+          <b>Realtime channel</b>
+          <span>Domain events → pushed to connected clients</span>
+        </div>
+        <div class="arch__node">
+          <b>Export</b>
+          <span>Reports → PDF · CSV · Excel</span>
+        </div>
+      </div>
+
+      <div class="arch__link" aria-hidden="true"><span>JDBC</span></div>
+
+      <div class="arch__col">
+        <p class="arch__coltitle">Data</p>
+        <div class="arch__node">
+          <b>PostgreSQL</b>
+          <span>Flyway-managed schema</span>
+        </div>
+        <div class="arch__node">
+          <b>Movement events</b>
+          <span>Append-only — the record of what happened</span>
+        </div>
+        <div class="arch__node">
+          <b>Read projections</b>
+          <span>Indexed views for operational lookups &amp; paginated reports</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <figcaption class="arch__caption">
+    Clients talk to one Spring Boot API over REST; a WebSocket channel pushes domain events back so
+    the floor and the office converge on the same state. Current position and history are derived
+    from an append-only event log in PostgreSQL.
+  </figcaption>
+</figure>
+
+<style>
+  .arch {
+    margin-block: var(--space-6);
+  }
+  .arch__scroll {
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    padding: var(--space-5);
+  }
+  .arch__grid {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .arch__col {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+
+  /* connectors only make sense in the 3-column desktop layout */
+  .arch__link {
+    display: none;
+  }
+  @media (min-width: 720px) {
+    .arch__grid {
+      grid-template-columns: 1fr auto 1.15fr auto 1fr;
+      align-items: start;
+      min-width: 720px;
+    }
+    .arch__link {
+      display: grid;
+    }
+  }
+  .arch__coltitle {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+  }
+  .arch__node {
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-md);
+    background: var(--color-ground);
+    padding: 10px 12px;
+  }
+  .arch__node--accent {
+    border-color: var(--color-accent);
+  }
+  .arch__node b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    color: var(--color-ink);
+  }
+  .arch__node span {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.76rem;
+    color: var(--color-ink-soft);
+    line-height: 1.45;
+  }
+  .arch__link {
+    align-self: center;
+    gap: 4px;
+    justify-items: center;
+    padding-top: var(--space-6);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-soft);
+    text-align: center;
+  }
+  .arch__link::before {
+    content: '→';
+    font-size: 1rem;
+    color: var(--color-accent);
+  }
+  .arch__link-alt {
+    color: var(--color-ink-soft);
+  }
+  .arch__caption {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    color: var(--color-steel);
+    max-width: 66ch;
+  }
+</style>

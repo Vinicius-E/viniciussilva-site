@@ -1,0 +1,58 @@
+---
+import SectionShell from '../layout/SectionShell.astro';
+import Button from '../ui/Button.astro';
+import CopyText from '../ui/CopyText.astro';
+import { site, mailtoHref } from '../../lib/site';
+---
+
+<SectionShell id="contact" label="Contact" heading="Let's talk.">
+  <div class="contact">
+    <p class="contact__sub">{site.availability}</p>
+
+    <div class="contact__actions">
+      <Button href={mailtoHref} variant="solid" analytics="contact_email">Email me</Button>
+      <Button href={site.socials.linkedin} variant="outline" external analytics="out_linkedin">
+        LinkedIn
+      </Button>
+      <Button href={site.socials.github} variant="outline" external analytics="out_github">
+        GitHub
+      </Button>
+      <Button href={site.resumePath} variant="link" external download analytics="resume_download">
+        Résumé (PDF)
+      </Button>
+    </div>
+
+    <p class="contact__email">
+      <CopyText
+        value={site.contact.email}
+        href={mailtoHref}
+        analytics="contact_email"
+        analyticsCopy="contact_email_copy"
+      />
+    </p>
+  </div>
+</SectionShell>
+
+<style>
+  .contact__sub {
+    font-size: clamp(1rem, 0.95rem + 0.4vw, 1.1rem);
+    color: var(--color-ink-soft);
+    max-width: 52ch;
+  }
+  .contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    margin-top: var(--space-5);
+  }
+  .contact__email {
+    margin-top: var(--space-5);
+  }
+  @media (max-width: 480px) {
+    .contact__actions > :global(.btn:not(.btn--link)) {
+      flex: 1 1 100%;
+      justify-content: center;
+    }
+  }
+</style>

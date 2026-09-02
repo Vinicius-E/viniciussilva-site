@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import SectionShell from '../layout/SectionShell.astro';
+import ExperienceEntry from './ExperienceEntry.astro';
+import Button from '../ui/Button.astro';
+import { site } from '../../lib/site';
+
+const entries = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<SectionShell id="experience" label="Experience" heading="Where I've done this.">
+  <div class="xp-list">
+    {
+      entries.map((e) => (
+        <ExperienceEntry
+          company={e.data.company}
+          title={e.data.title}
+          start={e.data.start}
+          end={e.data.end}
+          context={e.data.context}
+          ownership={e.data.ownership}
+          stack={e.data.stack}
+        />
+      ))
+    }
+  </div>
+
+  <p class="xp-links">
+    <Button href={site.socials.linkedin} variant="link" external analytics="out_linkedin">
+      Full history on LinkedIn
+    </Button>
+    <span aria-hidden="true" class="xp-links__sep">·</span>
+    <Button href={site.resumePath} variant="link" external download analytics="resume_download">
+      Download résumé
+    </Button>
+  </p>
+</SectionShell>
+
+<style>
+  .xp-list {
+    border-top: 1px solid var(--color-hairline-soft);
+  }
+  .xp-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+  .xp-links__sep {
+    color: var(--color-hairline);
+  }
+</style>

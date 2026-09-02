@@ -1,0 +1,137 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'solid' | 'outline' | 'link';
+  size?: 'md' | 'sm';
+  external?: boolean;
+  download?: boolean;
+  analytics?: string;
+  analyticsLabel?: string;
+  class?: string;
+  id?: string;
+  type?: 'button' | 'submit';
+}
+
+const {
+  href,
+  variant = 'solid',
+  size = 'md',
+  external = false,
+  download = false,
+  analytics,
+  analyticsLabel,
+  class: klass,
+  id,
+  type = 'button',
+} = Astro.props;
+
+const rel = external ? 'noopener' : undefined;
+const target = external ? '_blank' : undefined;
+
+const common = {
+  id,
+  class: `btn btn--${variant} btn--${size}${klass ? ` ${klass}` : ''}`,
+  'data-analytics': analytics,
+  'data-analytics-label': analyticsLabel,
+};
+---
+
+{
+  href ? (
+    <a href={href} rel={rel} target={target} download={download ? '' : undefined} {...common}>
+      <span class="btn__label"><slot /></span>
+      {external && <span class="btn__icon" aria-hidden="true">↗</span>}
+      {download && <span class="btn__icon" aria-hidden="true">↓</span>}
+      {external && <span class="sr-only">(opens in a new tab)</span>}
+    </a>
+  ) : (
+    <button type={type} {...common}>
+      <span class="btn__label"><slot /></span>
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    --_bg: transparent;
+    --_fg: var(--color-ink);
+    --_bd: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--step--1);
+    letter-spacing: 0.01em;
+    line-height: 1;
+    text-decoration: none;
+    border: 1px solid var(--_bd);
+    background: var(--_bg);
+    color: var(--_fg);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition:
+      background var(--dur) var(--ease),
+      border-color var(--dur) var(--ease),
+      color var(--dur) var(--ease),
+      transform var(--dur-fast) var(--ease);
+  }
+  .btn--md {
+    padding: 12px 18px;
+    min-height: 44px;
+  }
+  .btn--sm {
+    padding: 8px 14px;
+    min-height: 40px;
+    font-size: 0.8rem;
+  }
+
+  .btn--solid {
+    --_bg: var(--color-accent);
+    --_fg: var(--color-on-accent);
+    --_bd: var(--color-accent);
+  }
+  .btn--solid:hover {
+    --_bg: var(--color-accent-strong);
+    --_bd: var(--color-accent-strong);
+    color: var(--color-on-accent);
+    transform: translateY(-1px);
+  }
+  .btn--outline {
+    --_bd: var(--color-hairline);
+    --_fg: var(--color-ink);
+  }
+  .btn--outline:hover {
+    --_bd: var(--color-accent);
+    --_fg: var(--color-accent);
+  }
+  .btn--link {
+    padding-inline: 0;
+    min-height: 0;
+    border: 0;
+    border-radius: 2px;
+    --_fg: var(--color-accent);
+  }
+  .btn--link:hover {
+    --_fg: var(--color-accent-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .btn:active {
+    transform: none;
+    filter: brightness(0.96);
+    transition: none;
+  }
+
+  .btn__icon {
+    font-size: 0.9em;
+    opacity: 0.85;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover {
+      transform: none;
+    }
+  }
+</style>

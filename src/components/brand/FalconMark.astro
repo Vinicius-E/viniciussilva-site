@@ -1,0 +1,51 @@
+---
+/* =========================================================================
+   BRAND MARK — ISOLATED ASSET SLOT
+
+   ⚠ PLACEHOLDER. This is NOT the final logo.
+
+   The official falcon / eagle mark (geometric, with subtle circuit detailing)
+   will be supplied by Vinicius as an SVG. When it arrives:
+     1. drop the file at  src/assets/brand/falcon.svg
+     2. replace the <svg> markup below with its contents (keep the <svg>
+        using `currentColor` so it inherits theme colour), OR swap to
+        `import falcon from '../../assets/brand/falcon.svg?raw'` and render it.
+     3. update the favicon at  public/favicon.svg  to match.
+     4. delete this warning block.
+
+   Until then this renders a neutral geometric placeholder — deliberately
+   abstract so it never reads as a finished falcon. "Engineering first,
+   brand second."
+   ========================================================================= */
+interface Props {
+  size?: number;
+  title?: string;
+  class?: string;
+}
+const { size = 22, title = 'Vinicius Silva', class: klass } = Astro.props;
+---
+
+<span
+  class={`falcon${klass ? ` ${klass}` : ''}`}
+  style={`--mark-size:${size}px`}
+  data-placeholder="true"
+  role="img"
+  aria-label={title}
+>
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" aria-hidden="true">
+    <!-- abstract precision glyph — placeholder only -->
+    <path d="M12 2 L21 12 L12 22 L3 12 Z" stroke="currentColor" stroke-width="1.4" />
+    <path d="M12 2 L12 22 M3 12 L21 12" stroke="currentColor" stroke-width="1.4" opacity="0.35" />
+  </svg>
+</span>
+
+<style>
+  .falcon {
+    display: inline-grid;
+    place-items: center;
+    width: var(--mark-size);
+    height: var(--mark-size);
+    color: var(--color-accent);
+    line-height: 0;
+  }
+</style>
