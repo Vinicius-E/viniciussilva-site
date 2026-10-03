@@ -273,3 +273,8 @@ dl.kv dd { margin: 0; }
 dialog .db > * { min-width: 0; }
 dialog input[type=file] { max-width: 100%; }
 @media (max-width: 999px) { dialog .tablewrap table, dialog .tablewrap tbody, dialog .tablewrap tr { display: table; width: 100%; } dialog .tablewrap tbody { display: table-row-group; } dialog .tablewrap tr { display: table-row; } dialog .tablewrap td { display: table-cell; text-align: left !important; } dialog .tablewrap td::before { display: none; } dialog .tablewrap thead { position: static; width: auto; height: auto; clip-path: none; } }
+
+/* seletor de idioma */
+.langs { display: inline-flex; gap: 2px; align-items: center; }
+.langs .lang { min-width: 44px; min-height: 44px; padding: 0 8px; font-size: .78rem; font-weight: 600; letter-spacing: .04em; }
+.langs .lang[aria-pressed='true'] { background: var(--surface-2, rgba(127,127,127,.18)); text-decoration: underline; text-underline-offset: 4px; }

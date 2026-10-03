@@ -54,7 +54,7 @@ for (const p of ['/..%2f..%2fpackage.json', '/%2e%2e/%2e%2e/package.json', '/dem
   ok(x.status !== 200 || !body.includes('viniciussilva-site'), `travessia bloqueada: ${p} (${x.status})`);
 }
 // 4. XSS armazenado e refletido em todas as demos
-const slugs = readdirSync('dist/demos', { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
+const slugs = readdirSync('dist/demos', { withFileTypes: true }).filter((d) => d.isDirectory() && existsSync('dist/demos/' + d.name + '/kit-data.js')).map((d) => d.name);
 let xssFail = 0;
 for (const slug of slugs) {
   const ctx = await browser.newContext(); const page = await ctx.newPage();
@@ -63,7 +63,7 @@ for (const slug of slugs) {
   await page.goto(`${B}/demos/${slug}/index.html`, { waitUntil: 'networkidle' });
   await page.evaluate(() => (location.hash = '#/entrar')); await page.waitForSelector('.role'); await page.locator('.role').first().click(); await page.waitForSelector('.kpi .v');
   // grava registro malicioso pela própria API da demo (campos de texto) e navega pelas telas
-  const cfg = await page.evaluate(() => window.__KIT.config);
+  const cfg = await page.evaluate(() => window.__KIT.configs[window.__KIT_LANG]);
   const rec = {};
   for (const f of cfg.entity.fields) {
     if (f.type === 'text' || f.type === 'longtext') rec[f.key] = xss.slice(0, f.max || 80);

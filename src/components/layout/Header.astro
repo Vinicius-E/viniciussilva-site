@@ -125,6 +125,19 @@ const nav = primaryNav.map((item) => ({
       display: inline-flex;
     }
   }
+  /* telas médias: o menu ganhou "Portfolio" e, em pt/es, rótulos mais longos: compacta para caber sem rolagem horizontal */
+  @media (min-width: 700px) and (max-width: 1000px) {
+    .site-header__nav {
+      gap: var(--space-3);
+    }
+    .site-header__nav a {
+      font-size: 0.66rem;
+      letter-spacing: 0.03em;
+    }
+    .site-header__actions {
+      gap: var(--space-2);
+    }
+  }
   @media (min-width: 900px) {
     .site-header__resume {
       display: inline-flex;

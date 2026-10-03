@@ -2,11 +2,11 @@
    node scripts/portfolio-check.mjs [baseURL] */
 import { chromium } from 'playwright-core';
 import AxeBuilder from '@axe-core/playwright';
-import { readdirSync, mkdirSync } from 'node:fs';
+import { readdirSync, mkdirSync, existsSync } from 'node:fs';
 
 const BASE = process.argv[2] || 'http://127.0.0.1:4321';
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const slugs = readdirSync('public/demos', { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
+const slugs = readdirSync('public/demos', { withFileTypes: true }).filter((d) => d.isDirectory() && existsSync('public/demos/' + d.name + '/kit-data.js')).map((d) => d.name);
 mkdirSync('.review', { recursive: true });
 const browser = await chromium.launch({ executablePath: CHROME, headless: true });
 const bad = [];
@@ -62,14 +62,15 @@ for (const [tag, w, h] of [['desktop', 1440, 1000], ['tablet', 820, 1000], ['mob
     const page = await ctx.newPage();
     const errs = [];
     page.on('console', (m) => m.type() === 'error' && errs.push(m.text()));
-    await page.goto(BASE + '/portfolio', { waitUntil: 'networkidle' });
+    await page.goto(BASE + (process.env.PF_PATH || '/portfolio'), { waitUntil: 'networkidle' });
+    const N = await page.locator('[data-slide]').count();
     const count = () => page.locator('[data-count]').innerText();
-    if ((await count()) !== '1 / 28') { console.log('FALHA contador inicial', await count()); pf++; }
+    if ((await count()) !== `1 / ${N}`) { console.log('FALHA contador inicial', await count()); pf++; }
     await page.locator('[data-next]').click();
-    if ((await count()) !== '2 / 28') { console.log('FALHA next', await count()); pf++; }
+    if ((await count()) !== `2 / ${N}`) { console.log('FALHA next', await count()); pf++; }
     await page.locator('[data-region]').focus();
     await page.keyboard.press('ArrowRight');
-    if ((await count()) !== '3 / 28') { console.log('FALHA teclado', await count()); pf++; }
+    if ((await count()) !== `3 / ${N}`) { console.log('FALHA teclado', await count()); pf++; }
     await page.locator('[data-rail] button[data-slug="vaga-match"]').click();
     if (!(await page.locator('#vaga-match').evaluate((e) => !e.hasAttribute('inert')))) { console.log('FALHA rail'); pf++; }
     await page.locator('.chip[data-cat="career"]').click();

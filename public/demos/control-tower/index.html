@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control Tower — signals across all your projects</title>
+<meta name="description" content="One screen for the messages, health, size and DevOps signals of every project, per tenant.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1118'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%234fd1ff'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%234fd1ff' stroke-width='3' opacity='.6'/%3E%3Ccircle cx='32' cy='32' r='26' fill='none' stroke='%234fd1ff' stroke-width='2' opacity='.3'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+<div id="app" class="app" hidden>
+  <header class="top">
+    <div class="brand"><span class="orb" aria-hidden="true"></span><h1 class="bt" data-i18n="title">Control Tower</h1><span class="live" id="live" data-i18n="live">LIVE</span></div>
+    <div class="ctl">
+      <label class="sr" for="tenant" data-i18n="tenant">Tenant</label><select id="tenant"></select>
+      <label class="sr" for="win" data-i18n="window">Window</label>
+      <select id="win"><option value="15">15 min</option><option value="60" selected>1 h</option><option value="360">6 h</option></select>
+      <div class="langs" role="group" aria-label="Language"><button type="button" data-lang="en">EN</button><button type="button" data-lang="pt">PT</button><button type="button" data-lang="es">ES</button></div>
+      <button type="button" id="theme" data-i18n-aria="theme">◐</button>
+      <button type="button" id="logout" data-i18n="signout">Sign out</button>
+    </div>
+  </header>
+  <main id="main" class="grid">
+    <section class="card map" aria-labelledby="h-map">
+      <div class="card-h"><h2 id="h-map" data-i18n="map">Constellation of projects</h2>
+        <ul class="legend" aria-hidden="true"><li class="ok"></li><span data-i18n="st_ok">healthy</span><li class="warn"></li><span data-i18n="st_warn">warning</span><li class="error"></li><span data-i18n="st_error">failing</span><li class="silent"></li><span data-i18n="st_silent">silent</span></ul></div>
+      <canvas id="cv" width="900" height="520" aria-hidden="true"></canvas>
+      <p class="hint" data-i18n="maphint">Each dot is a project. Lines join projects that appear in the same trace (one operation crossing systems). Click a dot to filter.</p>
+      <details class="tablewrap"><summary data-i18n="projtable">Projects as a table</summary>
+        <table id="ptable"><thead><tr><th data-i18n="c_project">Project</th><th data-i18n="c_status">Status</th><th data-i18n="c_signals">Signals</th><th data-i18n="c_errors">Errors</th><th data-i18n="c_warns">Warnings</th><th data-i18n="c_traces">Cross-project traces</th><th data-i18n="c_last">Last signal</th></tr></thead><tbody></tbody></table></details>
+    </section>
+    <section class="card feed" aria-labelledby="h-feed">
+      <div class="card-h"><h2 id="h-feed" data-i18n="feed">Live signals</h2><span id="count" class="muted"></span></div>
+      <form id="filters" class="filters" role="search">
+        <label class="sr" for="q" data-i18n="search">Search</label><input id="q" type="search" autocomplete="off" data-i18n-ph="searchph" placeholder="Search message, code or project">
+        <label class="sr" for="fproj" data-i18n="c_project">Project</label><select id="fproj"><option value="" data-i18n="allproj">All projects</option></select>
+        <label class="sr" for="flevel" data-i18n="level">Level</label><select id="flevel"><option value="" data-i18n="alllevels">All levels</option><option value="error">error</option><option value="warn">warn</option><option value="info">info</option></select>
+        <label class="sr" for="fkind" data-i18n="kind">Kind</label><select id="fkind"><option value="" data-i18n="allkinds">All kinds</option><option value="log">log</option><option value="health">health</option><option value="audit">audit</option><option value="metric">metric</option></select>
+      </form>
+      <div id="list" class="list"></div>
+    </section>
+    <section class="card tl" aria-labelledby="h-tl"><div class="card-h"><h2 id="h-tl" data-i18n="activity">Activity per minute</h2></div><canvas id="tl" width="620" height="170" role="img" data-i18n-aria="tl_alt" aria-label="Signals per minute, stacked by level"></canvas></section>
+    <section class="card codes" aria-labelledby="h-codes"><div class="card-h"><h2 id="h-codes" data-i18n="topcodes">Top issues</h2></div><ol id="codes" class="bars"></ol></section>
+    <section class="card size" aria-labelledby="h-size"><div class="card-h"><h2 id="h-size" data-i18n="sizes">Size and storage</h2></div><div id="size" class="metrics"></div></section>
+    <section class="card devops" aria-labelledby="h-dev"><div class="card-h"><h2 id="h-dev" data-i18n="devops">DevOps</h2></div><div id="devops" class="metrics"></div></section>
+  </main>
+  <aside id="drawer" class="drawer" hidden aria-labelledby="d-t">
+    <div class="drawer-h"><h2 id="d-t" data-i18n="detail">Signal detail</h2><button type="button" id="dclose" data-i18n-aria="close" aria-label="Close">✕</button></div>
+    <div id="dbody"></div>
+  </aside>
+</div>
+
+<div id="login" class="login">
+  <form id="lform" class="lcard" autocomplete="off">
+    <div class="brand"><span class="orb" aria-hidden="true"></span><strong data-i18n="title">Control Tower</strong></div>
+    <h1 class="lh" data-i18n="signin">Sign in with a read token</h1>
+    <p class="muted" data-i18n="signinhint">Paste the read token of a tenant (or the admin token). It stays only in this browser tab.</p>
+    <label for="tok" data-i18n="token">Read token</label>
+    <input id="tok" type="password" autocomplete="off" spellcheck="false" required>
+    <p id="lerr" class="err" role="alert"></p>
+    <div class="row"><button type="submit" class="primary" data-i18n="enter">Enter</button><button type="button" id="demo" data-i18n="demo">Explore the demo (simulated, in your browser)</button></div>
+    <div class="langs" role="group" aria-label="Language"><button type="button" data-lang="en">EN</button><button type="button" data-lang="pt">PT</button><button type="button" data-lang="es">ES</button></div>
+  </form>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

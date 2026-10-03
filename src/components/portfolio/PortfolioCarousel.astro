@@ -1,38 +1,36 @@
 ---
-import { portfolio, portfolioCategories, portfolioStack } from '../../lib/portfolio-data';
+import { portfolio, portfolioCategories, portfolioStack, portfolioUi } from '../../lib/portfolio-data';
+import { getLangFromUrl } from '../../i18n/utils';
 
+const lang = getLangFromUrl(Astro.url);
+const ui = portfolioUi[lang];
 const total = portfolio.length;
 const cats = Object.entries(portfolioCategories);
-const demoHref = (slug: string) => `/demos/${slug}/index.html`;
+const catName = (c: keyof typeof portfolioCategories) => portfolioCategories[c][lang];
+const demoHref = (href: string) => href + (href.includes('?') ? '&' : '?') + `lang=${lang}`;
 ---
 
 <section class="pf" data-pf aria-labelledby="pf-title">
   <div class="wrap">
     <header class="pf__head">
-      <p class="mono-label">Portfolio</p>
-      <h1 id="pf-title" class="pf__title">{total} working systems. Open any of them.</h1>
-      <p class="pf__intro">
-        Each project is a complete, usable web system: landing page, two access profiles with different
-        permissions, a guided form, searchable list, KPI dashboard and an AI-assistant panel. They run entirely in
-        your browser with fictional data — nothing is sent to a server, and the AI panel is simulated by local
-        rules in this static build. Every one passed an automated visual quality gate (contrast, focus, touch
-        targets, responsive overflow).
-      </p>
-      <p class="pf__note">The demo interfaces are in Brazilian Portuguese, the language of their target users.</p>
+      <p class="mono-label">{ui.label}</p>
+      <h1 id="pf-title" class="pf__title">{ui.title}</h1>
+      <p class="pf__intro">{ui.intro}</p>
+      <p class="pf__note">{ui.note}</p>
     </header>
 
-    <div class="pf__filters" role="group" aria-label="Filter by category" data-filters>
-      <button type="button" class="chip" data-cat="all" aria-pressed="true">All <span>{total}</span></button>
+    <div class="pf__filters" role="group" aria-label={ui.filterBy} data-filters>
+      <button type="button" class="chip" data-cat="all" aria-pressed="true">{ui.all} <span>{total}</span></button>
       {
-        cats.map(([id, label]) => (
+        cats.map(([id, names]) => (
           <button type="button" class="chip" data-cat={id} aria-pressed="false">
-            {label} <span>{portfolio.filter((p) => p.category === id).length}</span>
+            {names[lang]} <span>{portfolio.filter((p) => p.category === id).length}</span>
           </button>
         ))
       }
     </div>
 
-    <div class="pf__carousel" role="region" aria-roledescription="carousel" aria-label="Portfolio projects" tabindex="-1" data-region>
+    <div class="pf__carousel" role="region" aria-roledescription="carousel" aria-label={ui.carousel} tabindex="-1" data-region>
       <div class="pf__viewport">
         <div class="pf__track" data-track>
           {
@@ -44,10 +42,10 @@ const demoHref = (slug: string) => `/demos/${slug}/index.html`;
                 data-cat={p.category}
                 role="group"
                 aria-roledescription="slide"
-                aria-label={`${p.name}, project ${i + 1} of ${total}`}
+                aria-label={`${p.name}, ${ui.project} ${i + 1} ${ui.of} ${total}`}
                 style={`--a:${p.accent}`}
               >
-                <a class="slide__shot" href={demoHref(p.slug)} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                <a class="slide__shot" href={demoHref(p.href)} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
                   <img
                     src={`/portfolio/${p.slug}.webp`}
                     width="1200"
@@ -61,30 +59,30 @@ const demoHref = (slug: string) => `/demos/${slug}/index.html`;
                   <p class="slide__eyebrow">
                     <span class="slide__logo" aria-hidden="true">{p.glyph}</span>
                     <span>
-                      <span data-num>{String(i + 1).padStart(2, '0')}</span> / {total} · {portfolioCategories[p.category]}
+                      <span data-num>{String(i + 1).padStart(2, '0')}</span> / {total} · {catName(p.category)}
                     </span>
                   </p>
                   <h2 class="slide__title">{p.name}</h2>
-                  <p class="slide__summary">{p.summary}</p>
+                  <p class="slide__summary">{p.txt[lang].summary}</p>
                   <dl class="slide__facts">
                     <div>
-                      <dt>Problem</dt>
-                      <dd>{p.problem}</dd>
+                      <dt>{ui.problem}</dt>
+                      <dd>{p.txt[lang].problem}</dd>
                     </div>
                     <div>
-                      <dt>Highlight</dt>
-                      <dd>{p.highlight}</dd>
+                      <dt>{ui.highlight}</dt>
+                      <dd>{p.txt[lang].highlight}</dd>
                     </div>
                   </dl>
-                  <ul class="slide__stack" aria-label="Technology">
+                  <ul class="slide__stack" aria-label={ui.tech}>
                     {portfolioStack.map((s) => <li>{s}</li>)}
                   </ul>
                   <p class="slide__cta">
-                    <a class="btn-demo" href={demoHref(p.slug)} target="_blank" rel="noopener">
-                      Open live demo <span aria-hidden="true">↗</span>
-                      <span class="sr-only">of {p.name} (opens in a new tab)</span>
+                    <a class="btn-demo" href={demoHref(p.href)} target="_blank" rel="noopener">
+                      {ui.open} <span aria-hidden="true">↗</span>
+                      <span class="sr-only">— {p.name} ({ui.opens})</span>
                     </a>
-                    <span class="slide__hint">Pick a profile on the login screen — no sign-up.</span>
+                    <span class="slide__hint">{ui.hint}</span>
                   </p>
                 </div>
               </div>
@@ -94,17 +92,17 @@ const demoHref = (slug: string) => `/demos/${slug}/index.html`;
       </div>
 
       <div class="pf__controls">
-        <button type="button" class="nav" data-prev aria-label="Previous project"><span aria-hidden="true">←</span></button>
+        <button type="button" class="nav" data-prev aria-label={ui.prev}><span aria-hidden="true">←</span></button>
         <p class="pf__count" aria-live="polite" data-count>1 / {total}</p>
-        <button type="button" class="nav" data-next aria-label="Next project"><span aria-hidden="true">→</span></button>
+        <button type="button" class="nav" data-next aria-label={ui.next}><span aria-hidden="true">→</span></button>
       </div>
 
-      <nav class="pf__rail" aria-label="Jump to a project">
+      <nav class="pf__rail" aria-label={ui.jump}>
         <ul data-rail>
           {
             portfolio.map((p, i) => (
               <li data-rail-item data-cat={p.category}>
-                <button type="button" data-slug={p.slug} style={`--a:${p.accent}`} aria-label={`${p.name}, project ${i + 1}`} title={p.name}>
+                <button type="button" data-slug={p.slug} style={`--a:${p.accent}`} aria-label={`${p.name}, ${ui.project} ${i + 1}`} title={p.name}>
                   <span aria-hidden="true">{p.glyph}</span>
                 </button>
               </li>
