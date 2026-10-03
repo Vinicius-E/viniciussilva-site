@@ -4,22 +4,69 @@ import SectionShell from '../layout/SectionShell.astro';
 import ExperienceEntry from './ExperienceEntry.astro';
 import Button from '../ui/Button.astro';
 import { site } from '../../lib/site';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
-const entries = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const entries = (await getCollection('experience'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => {
+    const tr = lang === 'en' ? undefined : e.data.translations?.[lang];
+    return {
+      company: e.data.company,
+      title: tr?.title ?? e.data.title,
+      start: e.data.start,
+      end: e.data.end,
+      context: tr?.context ?? e.data.context,
+      ownership: tr?.ownership ?? e.data.ownership,
+      stack: e.data.stack,
+    };
+  });
+
+const cases = await getCollection('cases', ({ data }) => !data.draft);
+const current = cases.find((c) => c.data.featured) ?? cases[0];
+const caseCta = lang === 'en' ? t.experience.readCase : `${t.experience.readCase} ${t.work.caseInEnglish}`;
 ---
 
-<SectionShell id="experience" label="Experience" heading="Where I've done this.">
+<SectionShell id="experience" label={t.experience.label} heading={t.experience.heading}>
+  {
+    current && (
+      <div class="xp-current" data-reveal>
+        <p class="xp-current__label">{t.experience.currentLabel}</p>
+        <h3 class="xp-current__title">{current.data.title}</h3>
+        <p class="xp-current__meta">
+          {current.data.clientDisplay} · {current.data.location}
+        </p>
+        <p class="xp-current__body">{t.experience.currentBody}</p>
+        <p class="xp-current__cta">
+          <Button
+            href={`/work/${current.id}`}
+            variant="link"
+            analytics="case_open"
+            analyticsLabel={current.id}
+          >
+            {caseCta}
+          </Button>
+        </p>
+      </div>
+    )
+  }
+
+  <p class="xp-heading">{t.experience.employmentHeading}</p>
   <div class="xp-list">
     {
       entries.map((e) => (
         <ExperienceEntry
-          company={e.data.company}
-          title={e.data.title}
-          start={e.data.start}
-          end={e.data.end}
-          context={e.data.context}
-          ownership={e.data.ownership}
-          stack={e.data.stack}
+          company={e.company}
+          title={e.title}
+          start={e.start}
+          end={e.end}
+          context={e.context}
+          ownership={e.ownership}
+          stack={e.stack}
+          presentLabel={t.experience.present}
+          periodTodo={t.experience.periodTodo}
         />
       ))
     }
@@ -27,16 +74,57 @@ const entries = (await getCollection('experience')).sort((a, b) => a.data.order 
 
   <p class="xp-links">
     <Button href={site.socials.linkedin} variant="link" external analytics="out_linkedin">
-      Full history on LinkedIn
+      {t.experience.linkedinFull}
     </Button>
     <span aria-hidden="true" class="xp-links__sep">·</span>
     <Button href={site.resumePath} variant="link" external download analytics="resume_download">
-      Download résumé
+      {t.experience.downloadResume}
     </Button>
   </p>
 </SectionShell>
 
 <style>
+  .xp-current {
+    border: 1px solid var(--color-hairline);
+    border-left: 2px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    padding: var(--space-5);
+    margin-bottom: var(--space-7);
+  }
+  .xp-current__label {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  .xp-current__title {
+    font-size: var(--step-1);
+    margin-top: 8px;
+  }
+  .xp-current__meta {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--color-steel);
+    margin-top: 4px;
+  }
+  .xp-current__body {
+    color: var(--color-ink-soft);
+    margin-top: var(--space-3);
+    max-width: 62ch;
+  }
+  .xp-current__cta {
+    margin-top: var(--space-4);
+  }
+  .xp-heading {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+    margin-bottom: var(--space-3);
+  }
   .xp-list {
     border-top: 1px solid var(--color-hairline-soft);
   }

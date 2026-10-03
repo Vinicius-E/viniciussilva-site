@@ -9,11 +9,20 @@ interface Props {
   href?: string;
   analytics?: string;
   analyticsCopy?: string;
+  copyLabel?: string;
+  copiedLabel?: string;
 }
-const { value, href, analytics, analyticsCopy } = Astro.props;
+const {
+  value,
+  href,
+  analytics,
+  analyticsCopy,
+  copyLabel = 'Copy',
+  copiedLabel = 'Copied',
+} = Astro.props;
 ---
 
-<span class="copytext" data-value={value}>
+<span class="copytext" data-value={value} data-copy={copyLabel} data-copied={copiedLabel}>
   {
     href ? (
       <a href={href} class="copytext__value" data-analytics={analytics}>
@@ -24,7 +33,7 @@ const { value, href, analytics, analyticsCopy } = Astro.props;
     )
   }
   <button type="button" class="copytext__btn" hidden data-analytics={analyticsCopy}>
-    <span aria-hidden="true">⧉</span> <span class="copytext__btnlabel">Copy</span>
+    <span aria-hidden="true">⧉</span> <span class="copytext__btnlabel">{copyLabel}</span>
   </button>
 </span>
 
@@ -79,16 +88,18 @@ const { value, href, analytics, analyticsCopy } = Astro.props;
     const btn = root.querySelector<HTMLButtonElement>('.copytext__btn');
     const label = root.querySelector<HTMLElement>('.copytext__btnlabel');
     const value = root.dataset.value || '';
+    const copyLabel = root.dataset.copy || 'Copy';
+    const copiedLabel = root.dataset.copied || 'Copied';
     if (!btn || !navigator.clipboard) continue;
     btn.hidden = false;
     btn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(value);
         btn.classList.add('is-done');
-        if (label) label.textContent = 'Copied';
+        if (label) label.textContent = copiedLabel;
         window.setTimeout(() => {
           btn.classList.remove('is-done');
-          if (label) label.textContent = 'Copy';
+          if (label) label.textContent = copyLabel;
         }, 2000);
       } catch {
         /* clipboard blocked — the value is still visible to select manually */

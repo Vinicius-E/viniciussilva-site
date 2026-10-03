@@ -1,40 +1,13 @@
 ---
 import SectionShell from '../layout/SectionShell.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
-const steps = [
-  {
-    n: '01',
-    name: 'Understand',
-    line: 'Start from the operational problem and the people who have it, not the feature list.',
-  },
-  {
-    n: '02',
-    name: 'Design',
-    line: 'Choose the simplest architecture that satisfies the real requirements, and make the trade-offs explicit.',
-  },
-  {
-    n: '03',
-    name: 'Build',
-    line: 'Implement in small, verifiable increments, with tests that prove behaviour.',
-  },
-  {
-    n: '04',
-    name: 'Validate',
-    line: 'Check against the requirements and real usage; fix what the feedback surfaces.',
-  },
-  {
-    n: '05',
-    name: 'Evolve',
-    line: 'Keep the system maintainable as it grows, and treat the roadmap as hypotheses, not promises.',
-  },
-];
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const steps = t.how.steps.map((s, i) => ({ n: String(i + 1).padStart(2, '0'), ...s }));
 ---
 
-<SectionShell
-  id="approach"
-  label="How I Work"
-  heading="One loop, whether it's a team's codebase or a client's problem."
->
+<SectionShell id="approach" label={t.how.label} heading={t.how.heading}>
   <ol class="how">
     {
       steps.map((s) => (

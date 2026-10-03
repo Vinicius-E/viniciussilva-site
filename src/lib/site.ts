@@ -1,30 +1,23 @@
 /* =========================================================================
    Site-wide constants. Single source of truth for identity, links, contact.
-   Every value that still needs Vinicius' confirmation is flagged TODO[verify].
+   Values still awaiting Vinicius' confirmation are flagged TODO[...].
    Components must never hard-code these strings.
    ========================================================================= */
 
 export const site = {
   name: 'Vinicius Silva',
   legalName: 'Vinicius Eduardo da Silva',
-  role: 'Senior Software Engineer',
-  practice: 'Vinicius Silva Software Engineering',
-  practiceTagline: 'Enterprise & Industrial Software Engineering',
 
   // TODO[domain]: confirm final domain, then update astro.config.mjs `site` too.
   url: 'https://viniciussilva.dev',
 
-  positioning:
-    'Senior Software Engineer building reliable backend and full-stack systems for enterprise and industrial operations — with end-to-end ownership from requirements to evolution.',
-
-  metaDescription:
-    'Senior Software Engineer building reliable backend and full-stack systems for enterprise and industrial operations, with end-to-end ownership from requirements to production. Based in Brazil, working with international teams.',
-
-  availability:
-    'Open to full-time international Senior Software Engineering opportunities and selected independent software projects.',
+  // Prose copy (positioning, availability, meta description, location label) is
+  // per-locale in src/i18n/ui.ts. Only language-neutral facts live here.
 
   location: {
-    label: 'Based in Brazil · UTC−3 · Working remotely with international teams',
+    city: 'Blumenau',
+    region: 'Santa Catarina',
+    regionCode: 'SC',
     country: 'Brazil',
     countryCode: 'BR',
     timezone: 'UTC−3',
@@ -33,16 +26,14 @@ export const site = {
   },
 
   contact: {
-    // TODO[contact]: replace with a custom-domain address once the domain is set up.
+    // Matches the résumé. TODO[contact]: move to a custom-domain address once the domain is set up.
     email: 'viniciuseduardo0702@hotmail.com',
     emailSubject: 'Contact via viniciussilva.dev',
   },
 
   socials: {
-    // TODO[verify]: canonical LinkedIn URL.
-    linkedin: 'https://www.linkedin.com/in/vinicius-silva',
-    // TODO[verify]: canonical GitHub URL; decide whether to tidy/pin repos before launch.
-    github: 'https://github.com/vinicius-silva',
+    linkedin: 'https://www.linkedin.com/in/vinicius-esilva',
+    github: 'https://github.com/Vinicius-E',
   },
 
   // TODO[asset]: final résumé PDF (EN). Optional PT-BR version later.
@@ -50,23 +41,28 @@ export const site = {
 
   languages: [
     { name: 'Portuguese', level: 'Native' },
-    // TODO[verify]: CEFR level for English.
-    { name: 'English', level: 'Professional' },
+    { name: 'English', level: 'Advanced (C1)' },
   ],
 
   knowsAbout: [
     'Java',
     'Spring Boot',
+    'Quarkus',
     'Backend Engineering',
     'Full-Stack Development',
-    'PostgreSQL',
-    'Microservices',
+    'Distributed Systems',
+    'Event-Driven Architecture',
+    'RabbitMQ',
     'REST APIs',
+    'Microservices',
+    'PostgreSQL',
+    'JPA / Hibernate',
     'Software Architecture',
     'AWS',
     'TypeScript',
     'React',
     'Angular',
+    'Observability',
   ],
 } as const;
 

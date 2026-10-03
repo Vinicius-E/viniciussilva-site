@@ -9,8 +9,20 @@ interface Props {
   href?: string;
   slug?: string;
   featured?: boolean;
+  cta?: string;
+  image?: { src: string; alt: string };
 }
-const { eyebrow, title, body, meta, href, slug, featured = false } = Astro.props;
+const {
+  eyebrow,
+  title,
+  body,
+  meta,
+  href,
+  slug,
+  featured = false,
+  cta = 'Read the full case study →',
+  image,
+} = Astro.props;
 ---
 
 <article class={`work-card${featured ? ' work-card--featured' : ''}`} data-reveal>
@@ -23,7 +35,7 @@ const { eyebrow, title, body, meta, href, slug, featured = false } = Astro.props
       href && (
         <p class="work-card__cta">
           <Button href={href} variant="link" analytics="case_open" analyticsLabel={slug}>
-            Read the full case study →
+            {cta}
           </Button>
         </p>
       )
@@ -33,11 +45,15 @@ const { eyebrow, title, body, meta, href, slug, featured = false } = Astro.props
 
   {
     featured && (
-      <div class="work-card__media" aria-hidden="true">
-        <div class="ph-figure">
-          <span>screenshot · 2D layout / 3D view</span>
-          <span class="ph-figure__todo">image pending — cleared screenshots to be supplied</span>
-        </div>
+      <div class="work-card__media">
+        {image ? (
+          <img class="work-card__shot" src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+        ) : (
+          <div class="ph-figure" role="img" aria-label="Screenshot pending">
+            <span>screenshot · 2D layout / 3D view</span>
+            <span class="ph-figure__todo">image pending — cleared screenshots to be supplied</span>
+          </div>
+        )}
       </div>
     )
   }
@@ -87,6 +103,14 @@ const { eyebrow, title, body, meta, href, slug, featured = false } = Astro.props
   .work-card__media {
     margin-top: var(--space-5);
   }
+  .work-card__shot {
+    display: block;
+    width: 100%;
+    min-height: 200px;
+    object-fit: cover;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-md);
+  }
   .ph-figure {
     border: 1px solid var(--color-hairline);
     border-radius: var(--radius-md);
@@ -129,7 +153,8 @@ const { eyebrow, title, body, meta, href, slug, featured = false } = Astro.props
       margin-top: 0;
       height: 100%;
     }
-    .work-card--featured .ph-figure {
+    .work-card--featured .ph-figure,
+    .work-card--featured .work-card__shot {
       height: 100%;
     }
   }

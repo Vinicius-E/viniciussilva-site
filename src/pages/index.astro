@@ -1,28 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/home/Hero.astro';
-import SelectedWork from '../components/home/SelectedWork.astro';
-import EngineeringSnapshot from '../components/home/EngineeringSnapshot.astro';
-import Experience from '../components/home/Experience.astro';
-import Expertise from '../components/home/Expertise.astro';
-import HowIWork from '../components/home/HowIWork.astro';
-import About from '../components/home/About.astro';
-import ClosingCta from '../components/home/ClosingCta.astro';
-import Contact from '../components/home/Contact.astro';
-import { site } from '../lib/site';
-import { personLd, webSiteLd } from '../lib/seo';
-
-const title = `${site.name} — ${site.role} · Java, Spring Boot, Full-Stack`;
+import HomePage from '../components/home/HomePage.astro';
 ---
 
-<BaseLayout title={title} path="/" jsonLd={[personLd(), webSiteLd()]}>
-  <Hero />
-  <SelectedWork />
-  <EngineeringSnapshot />
-  <Experience />
-  <Expertise />
-  <HowIWork />
-  <About />
-  <ClosingCta />
-  <Contact />
-</BaseLayout>
+<HomePage />

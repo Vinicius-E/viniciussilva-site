@@ -12,10 +12,19 @@ export default defineConfig({
   site: SITE,
   trailingSlash: 'never',
   build: { format: 'file' },
+  i18n: {
+    locales: ['en', 'pt', 'es'],
+    defaultLocale: 'en',
+    routing: { prefixDefaultLocale: false },
+  },
   integrations: [
     mdx(),
     sitemap({
       filter: (page) => !page.includes('/404'),
+      i18n: {
+        defaultLocale: 'en',
+        locales: { en: 'en-US', pt: 'pt-BR', es: 'es-ES' },
+      },
     }),
   ],
   image: {

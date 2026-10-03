@@ -36,9 +36,9 @@ function card({ kicker, title, sub }) {
 const images = [
   {
     file: 'home.png',
-    kicker: 'Senior Software Engineer',
+    kicker: 'Senior Software Engineer · Full-Stack',
     title: 'Vinicius Silva',
-    sub: 'Backend · Full-Stack · Enterprise & Industrial systems',
+    sub: 'Java · Spring Boot · Distributed Systems · Enterprise & Industrial',
   },
   {
     file: 'case-industrial.png',

@@ -1,15 +1,16 @@
 ---
 import Button from '../ui/Button.astro';
+import { getLangFromUrl, localizePath, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
-<section class="closing" aria-label="Get in touch">
+<section class="closing" aria-label={t.closing.aria}>
   <div class="wrap closing__inner" data-reveal>
-    <p class="closing__line">
-      If any of this matches what you're hiring for or building, the next step is a short
-      conversation.
-    </p>
-    <Button href="/#contact" variant="solid" analytics="cta_footer_contact">
-      Start a conversation
+    <p class="closing__line">{t.closing.line}</p>
+    <Button href={localizePath('/#contact', lang)} variant="solid" analytics="cta_footer_contact">
+      {t.closing.cta}
     </Button>
   </div>
 </section>

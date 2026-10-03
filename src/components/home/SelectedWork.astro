@@ -2,19 +2,24 @@
 import { getCollection } from 'astro:content';
 import SectionShell from '../layout/SectionShell.astro';
 import WorkCard from './WorkCard.astro';
-import Todo from '../ui/Todo.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
 const featured = cases.find((c) => c.data.featured) ?? cases[0];
+
+const caseCta = lang === 'en' ? t.work.readCase : `${t.work.readCase} ${t.work.caseInEnglish}`;
 ---
 
 <SectionShell
   id="work"
-  label="Selected Work"
-  heading="Systems built and owned end to end."
-  intro="A few projects that show how I work — from the operational problem to the running system. Selected, not exhaustive."
+  label={t.work.label}
+  heading={t.work.heading}
+  intro={t.work.intro}
 >
   {
     featured && (
@@ -23,7 +28,7 @@ const featured = cases.find((c) => c.data.featured) ?? cases[0];
         eyebrow={`${featured.data.clientDisplay} · ${featured.data.location}`}
         title={featured.data.title}
         body={featured.data.summary}
-        meta={`Role: ${featured.data.role}  ·  ${[
+        meta={`${t.work.rolePrefix}: ${featured.data.role}  ·  ${[
           ...featured.data.stack.backend.slice(0, 3),
           ...featured.data.stack.frontend.slice(0, 1),
           ...featured.data.stack.mobile.slice(0, 1),
@@ -31,39 +36,30 @@ const featured = cases.find((c) => c.data.featured) ?? cases[0];
         ].join(' · ')}`}
         href={`/work/${featured.id}`}
         slug={featured.id}
+        cta={caseCta}
+        image={
+          featured.data.screenshots[1]?.src
+            ? { src: featured.data.screenshots[1].src, alt: featured.data.screenshots[1].alt }
+            : undefined
+        }
       />
     )
   }
 
-  {/* Optional cards 2–3 — see spec §I open question. Shown as marked placeholders
-      so the decision (ship / hold) can be made from the preview. */}
   <div class="work-more">
     <article class="work-mini" data-reveal>
-      <p class="work-mini__eyebrow">
-        Enterprise SaaS · GED / ECM domain — <Todo kind="nda">confirm what can be shown publicly</Todo>
-      </p>
-      <h3 class="work-mini__title">Document &amp; Signature Platform</h3>
-      <p class="work-mini__body">
-        Anonymised. Backend and frontend feature delivery in a regulated document domain (Senior
-        Sistemas). Deep page optional.
-      </p>
+      <p class="work-mini__eyebrow">{t.work.mini1Eyebrow}</p>
+      <h3 class="work-mini__title">{t.work.mini1Title}</h3>
+      <p class="work-mini__body">{t.work.mini1Body}</p>
     </article>
     <article class="work-mini" data-reveal>
-      <p class="work-mini__eyebrow">
-        Enterprise &amp; public-sector delivery — <Todo kind="scope">confirm scope that can be described</Todo>
-      </p>
-      <h3 class="work-mini__title">Multi-client Engineering</h3>
-      <p class="work-mini__body">
-        Short entry. Enterprise applications across the stack, including an international,
-        English-speaking context (Bosch, via Cast Group).
-      </p>
+      <p class="work-mini__eyebrow">{t.work.mini2Eyebrow}</p>
+      <h3 class="work-mini__title">{t.work.mini2Title}</h3>
+      <p class="work-mini__body">{t.work.mini2Body}</p>
     </article>
   </div>
 
-  <p class="work-note">
-    Client details and screenshots are shown with permission. Confidential operational data is
-    omitted or anonymised.
-  </p>
+  <p class="work-note">{t.work.note}</p>
 </SectionShell>
 
 <style>

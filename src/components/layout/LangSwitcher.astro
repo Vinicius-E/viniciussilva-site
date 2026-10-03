@@ -1,0 +1,71 @@
+---
+/* Language switcher. Static links to the same page in each locale (falls back
+   to the locale home when the current page has no localized route, e.g. the
+   English-only case study). Persists the choice like the theme toggle. */
+import { getLangFromUrl, localizePath, stripLangPrefix, locales, languages } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const base = stripLangPrefix(Astro.url.pathname);
+const hasLocalized = base === '/';
+---
+
+<div class="lang" role="group" aria-label={languages[lang]}>
+  {
+    locales.map((l) => (
+      <a
+        href={hasLocalized ? localizePath(base, l) : localizePath('/', l)}
+        class:list={['lang__opt', { 'is-current': l === lang }]}
+        hreflang={{ en: 'en', pt: 'pt-BR', es: 'es' }[l]}
+        aria-current={l === lang ? 'true' : undefined}
+        data-lang={l}
+      >
+        {l.toUpperCase()}
+      </a>
+    ))
+  }
+</div>
+
+<script>
+  for (const el of document.querySelectorAll<HTMLAnchorElement>('.lang__opt')) {
+    el.addEventListener('click', () => {
+      try {
+        localStorage.setItem('lang', el.dataset.lang || 'en');
+      } catch {
+        /* storage blocked — navigation still works */
+      }
+    });
+  }
+</script>
+
+<style>
+  .lang {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+  .lang__opt {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    color: var(--color-ink-soft);
+    text-decoration: none;
+    padding: 7px 8px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+  }
+  .lang__opt + .lang__opt {
+    border-left: 1px solid var(--color-hairline);
+  }
+  .lang__opt:hover {
+    color: var(--color-accent);
+  }
+  .lang__opt.is-current {
+    color: var(--color-ink);
+    background: var(--color-hairline-soft);
+    font-weight: 600;
+  }
+</style>

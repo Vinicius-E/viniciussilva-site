@@ -2,19 +2,18 @@
 /**
  * Lightweight "zoom-out" band between Selected Work and Experience.
  * Spec §A/03: no card chrome, reduced padding, hero-family typography,
- * hairline-separated cells. Four short facts. "5+ years" is the only quantity.
+ * hairline-separated cells. Four short facts.
  */
-const items = [
-  { label: '5+ years', line: 'Professional software engineering' },
-  { label: 'Enterprise', line: 'Product teams and regulated domains' },
-  { label: 'International', line: 'English-speaking, distributed teams' },
-  { label: 'End-to-end', line: 'Requirements, architecture, delivery, evolution' },
-];
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const items = t.snapshot.items;
 ---
 
-<section id="snapshot" class="snapshot" aria-label="Engineering snapshot">
+<section id="snapshot" class="snapshot" aria-label={t.snapshot.srHeading}>
   <div class="wrap">
-    <h2 class="sr-only">Engineering snapshot</h2>
+    <h2 class="sr-only">{t.snapshot.srHeading}</h2>
     <dl class="snapshot__grid" data-reveal>
       {
         items.map((it) => (

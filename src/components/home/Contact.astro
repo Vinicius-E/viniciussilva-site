@@ -3,22 +3,26 @@ import SectionShell from '../layout/SectionShell.astro';
 import Button from '../ui/Button.astro';
 import CopyText from '../ui/CopyText.astro';
 import { site, mailtoHref } from '../../lib/site';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
-<SectionShell id="contact" label="Contact" heading="Let's talk.">
+<SectionShell id="contact" label={t.nav.contact} heading={t.contact.heading}>
   <div class="contact">
-    <p class="contact__sub">{site.availability}</p>
+    <p class="contact__sub">{t.hero.availability}</p>
 
     <div class="contact__actions">
-      <Button href={mailtoHref} variant="solid" analytics="contact_email">Email me</Button>
+      <Button href={mailtoHref} variant="solid" analytics="contact_email">{t.contact.emailMe}</Button>
       <Button href={site.socials.linkedin} variant="outline" external analytics="out_linkedin">
-        LinkedIn
+        {t.contact.linkedin}
       </Button>
       <Button href={site.socials.github} variant="outline" external analytics="out_github">
-        GitHub
+        {t.contact.github}
       </Button>
       <Button href={site.resumePath} variant="link" external download analytics="resume_download">
-        Résumé (PDF)
+        {t.contact.resume}
       </Button>
     </div>
 
@@ -28,6 +32,8 @@ import { site, mailtoHref } from '../../lib/site';
         href={mailtoHref}
         analytics="contact_email"
         analyticsCopy="contact_email_copy"
+        copyLabel={t.contact.copy}
+        copiedLabel={t.contact.copied}
       />
     </p>
   </div>

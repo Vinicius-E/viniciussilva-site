@@ -1,0 +1,9 @@
+---
+import HomePage from '../../components/home/HomePage.astro';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'pt' } }, { params: { lang: 'es' } }];
+}
+---
+
+<HomePage />

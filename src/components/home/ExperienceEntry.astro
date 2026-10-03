@@ -9,12 +9,24 @@ interface Props {
   context: string;
   ownership: string;
   stack: string[];
+  presentLabel?: string;
+  periodTodo?: string;
 }
-const { company, title, start, end, context, ownership, stack } = Astro.props;
+const {
+  company,
+  title,
+  start,
+  end,
+  context,
+  ownership,
+  stack,
+  presentLabel = 'Present',
+  periodTodo = 'period from CV',
+} = Astro.props;
 
 const period =
   start && (end || end === null)
-    ? `${start} – ${end === null ? 'Present' : end}`
+    ? `${start} – ${end === null ? presentLabel : end}`
     : start
       ? `${start} – …`
       : null;
@@ -28,7 +40,7 @@ const period =
       <p class="xp-entry__title">{title}</p>
     </div>
     <p class="xp-entry__period">
-      {period ? period : <Todo kind="verify">period from CV</Todo>}
+      {period ? period : <Todo kind="verify">{periodTodo}</Todo>}
     </p>
   </div>
   <p class="xp-entry__context">{context}</p>

@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from './Hero.astro';
+import SelectedWork from './SelectedWork.astro';
+import EngineeringSnapshot from './EngineeringSnapshot.astro';
+import Experience from './Experience.astro';
+import Expertise from './Expertise.astro';
+import HowIWork from './HowIWork.astro';
+import About from './About.astro';
+import ClosingCta from './ClosingCta.astro';
+import Contact from './Contact.astro';
+import { site } from '../../lib/site';
+import { personLd, webSiteLd } from '../../lib/seo';
+import { getLangFromUrl, localizePath, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const title = `${site.name} — ${t.role} · ${t.meta.titleSuffix}`;
+---
+
+<BaseLayout
+  title={title}
+  path={localizePath('/', lang)}
+  jsonLd={[personLd(lang), webSiteLd(lang)]}
+>
+  <Hero />
+  <SelectedWork />
+  <EngineeringSnapshot />
+  <Experience />
+  <Expertise />
+  <HowIWork />
+  <About />
+  <ClosingCta />
+  <Contact />
+</BaseLayout>

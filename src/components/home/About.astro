@@ -2,50 +2,49 @@
 import SectionShell from '../layout/SectionShell.astro';
 import Todo from '../ui/Todo.astro';
 import { site } from '../../lib/site';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const countryName = lang === 'en' ? 'Brazil' : 'Brasil';
+const locationValue = `${site.location.city}, ${site.location.region}, ${countryName} · ${site.location.timezone}`;
 ---
 
-<SectionShell id="about" label="About" heading="About">
+<SectionShell id="about" label={t.about.label} heading={t.about.label}>
   <div class="about">
     <div class="about__text">
-      <p>
-        I'm a Senior Software Engineer with around five years building software for enterprise product
-        teams and, more recently, directly for industrial clients. My focus is backend engineering in
-        Java and Spring Boot, with the full-stack range to deliver a complete product and the habit
-        of owning it from the first conversation to production.
-      </p>
-      <p>
-        Working independently has made me a better engineer — it put me in the room for requirements,
-        architecture, trade-offs, and the long tail of maintenance and evolution. I work through my
-        own practice, {site.practice}.
-      </p>
+      <p>{t.about.p1}</p>
+      <p>{t.about.p2}</p>
 
       <dl class="about__facts">
         <div>
-          <dt>Location</dt>
-          <dd>Based in {site.location.country} · {site.location.timezone}</dd>
+          <dt>{t.about.factLocation}</dt>
+          <dd>{locationValue}</dd>
         </div>
         <div>
-          <dt>Work</dt>
+          <dt>{t.about.factWork}</dt>
           <dd>
-            Remote, with international teams ·{' '}
-            <Todo kind="verify">confirm public wording: “{site.location.relocation}”</Todo>
+            {t.about.workValue} ·{' '}
+            <Todo kind="verify">{t.about.relocationConfirm}: “{site.location.relocation}”</Todo>
           </dd>
         </div>
         <div>
-          <dt>Languages</dt>
-          <dd>
-            Portuguese (native) · English (professional,{' '}
-            <Todo kind="verify">CEFR level</Todo>)
-          </dd>
+          <dt>{t.about.factLanguages}</dt>
+          <dd>{t.about.languagesValue}</dd>
         </div>
       </dl>
     </div>
 
-    <figure class="about__photo" aria-hidden="true">
-      <div class="ph-photo">
-        <span>headshot</span>
-        <span class="ph-photo__todo">professional photo pending</span>
-      </div>
+    <figure class="about__photo">
+      <img
+        class="ph-photo"
+        src="/vinicius-photo.jpg"
+        width="720"
+        height="1081"
+        loading="lazy"
+        alt={`${site.name} — ${t.role}`}
+      />
     </figure>
   </div>
 </SectionShell>
@@ -82,33 +81,14 @@ import { site } from '../../lib/site';
   }
 
   .ph-photo {
+    display: block;
     border: 1px solid var(--color-hairline);
     border-radius: var(--radius-md);
-    background: repeating-linear-gradient(
-      45deg,
-      var(--color-hairline-soft),
-      var(--color-hairline-soft) 6px,
-      transparent 6px,
-      transparent 13px
-    );
     aspect-ratio: 4 / 5;
     max-width: 280px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--color-steel);
-  }
-  .ph-photo__todo {
-    font-size: 0.64rem;
-    color: var(--color-warn);
-    border: 1px dashed var(--color-warn);
-    border-radius: var(--radius-sm);
-    padding: 2px 8px;
-    text-align: center;
+    width: 100%;
+    object-fit: cover;
+    object-position: 50% 25%;
   }
 
   @media (min-width: 720px) {

@@ -1,7 +1,10 @@
 ---
 import { site, mailtoHref } from '../../lib/site';
 import FalconMark from '../brand/FalconMark.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 const year = new Date().getFullYear();
 ---
 
@@ -10,13 +13,13 @@ const year = new Date().getFullYear();
     <div class="site-footer__brand">
       <FalconMark size={18} />
       <div>
-        <p class="site-footer__name">{site.practice}</p>
-        <p class="site-footer__tag">{site.practiceTagline}</p>
+        <p class="site-footer__name">{site.name}</p>
+        <p class="site-footer__tag">{t.role}</p>
       </div>
     </div>
 
-    <nav class="site-footer__links" aria-label="Footer">
-      <a href={mailtoHref} data-analytics="contact_email">Email</a>
+    <nav class="site-footer__links" aria-label={t.a11y.footerNav}>
+      <a href={mailtoHref} data-analytics="contact_email">{t.footer.email}</a>
       <a href={site.socials.linkedin} target="_blank" rel="noopener" data-analytics="out_linkedin"
         >LinkedIn <span aria-hidden="true">↗</span></a
       >
@@ -24,16 +27,15 @@ const year = new Date().getFullYear();
         >GitHub <span aria-hidden="true">↗</span></a
       >
       <a href={site.resumePath} target="_blank" rel="noopener" data-analytics="resume_download"
-        >Résumé <span aria-hidden="true">↗</span></a
+        >{t.header.resume} <span aria-hidden="true">↗</span></a
       >
     </nav>
 
     <p class="site-footer__legal">
-      © {year} {site.legalName} · Based in {site.location.country} ({site.location.timezone}) · Built with
-      Astro
+      © {year} {site.legalName} {t.footer.legal}
     </p>
 
-    <a href="#top" class="site-footer__top">Back to top <span aria-hidden="true">↑</span></a>
+    <a href="#top" class="site-footer__top">{t.footer.backToTop} <span aria-hidden="true">↑</span></a>
   </div>
 </footer>
 

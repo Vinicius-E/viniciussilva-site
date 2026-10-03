@@ -1,43 +1,17 @@
 ---
 import SectionShell from '../layout/SectionShell.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
-const groups = [
-  {
-    name: 'Backend Engineering',
-    items: [
-      'Java',
-      'Spring Boot',
-      'REST APIs',
-      'JPA / Hibernate',
-      'PostgreSQL',
-      'SQL',
-      'Microservices',
-      'Quarkus',
-      'Node.js',
-    ],
-  },
-  { name: 'Full-Stack', items: ['Angular', 'React', 'TypeScript'] },
-  { name: 'Cloud & Delivery', items: ['AWS', 'Docker', 'CI/CD', 'Git'] },
-  {
-    name: 'Engineering Practice',
-    items: [
-      'Software architecture',
-      'Design patterns',
-      'OOP',
-      'Unit testing',
-      'Code review',
-      'Observability',
-      'Enterprise application design',
-    ],
-  },
-];
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const groups = t.expertise.groups;
 ---
 
 <SectionShell
   id="expertise"
-  label="Expertise"
-  heading="What I bring to a system."
-  intro="Grouped by capability, ordered by depth."
+  label={t.expertise.label}
+  heading={t.expertise.heading}
+  intro={t.expertise.intro}
 >
   <div class="expertise">
     {

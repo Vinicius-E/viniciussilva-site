@@ -4,40 +4,40 @@
    ========================================================================= */
 
 import { site } from './site';
+import { ui, type Lang } from '../i18n/ui';
 
 const abs = (path: string) => new URL(path, site.url).href;
 
-export function personLd() {
+export function personLd(lang: Lang = 'en') {
+  const t = ui[lang] ?? ui.en;
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: site.legalName,
     alternateName: site.name,
-    jobTitle: site.role,
-    description: site.positioning,
+    jobTitle: t.role,
+    description: t.meta.description,
     url: site.url,
     image: abs('/og/home.png'),
     sameAs: [site.socials.linkedin, site.socials.github],
     knowsAbout: [...site.knowsAbout],
     address: {
       '@type': 'PostalAddress',
+      addressLocality: site.location.city,
+      addressRegion: site.location.regionCode,
       addressCountry: site.location.countryCode,
-    },
-    worksFor: {
-      '@type': 'Organization',
-      name: site.practice,
-      description: site.practiceTagline,
     },
   };
 }
 
-export function webSiteLd() {
+export function webSiteLd(lang: Lang = 'en') {
+  const t = ui[lang] ?? ui.en;
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: `${site.name} — ${site.role}`,
+    name: `${site.name} — ${t.role}`,
     url: site.url,
-    inLanguage: 'en',
+    inLanguage: { en: 'en', pt: 'pt-BR', es: 'es' }[lang],
   };
 }
 

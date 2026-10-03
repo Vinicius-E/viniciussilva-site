@@ -1,29 +1,36 @@
 ---
 import Button from '../ui/Button.astro';
 import { site } from '../../lib/site';
+import { getLangFromUrl, localizePath, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 ---
 
 <section class="hero">
   <div class="wrap hero__inner">
-    <p class="eyebrow hero__eyebrow" data-reveal>Senior Software Engineer</p>
+    <p class="eyebrow hero__eyebrow" data-reveal>{t.role}</p>
     <h1 class="hero__title" data-reveal style="--reveal-delay: 60ms">
-      Engineering reliable software for real-world operations.
+      {t.hero.title}
     </h1>
     <p class="hero__sub" data-reveal style="--reveal-delay: 120ms">
-      Senior Software Engineer focused on Java/Spring backend engineering, modern full-stack
-      development and end-to-end product ownership.
+      {t.hero.sub}
     </p>
 
     <div class="hero__ctas" data-reveal style="--reveal-delay: 180ms">
-      <Button href="/#work" variant="solid" analytics="cta_hero_work">View selected work</Button>
-      <Button href="/#contact" variant="outline" analytics="cta_hero_contact">Get in touch</Button>
+      <Button href={localizePath('/#work', lang)} variant="solid" analytics="cta_hero_work">
+        {t.hero.ctaWork}
+      </Button>
+      <Button href={localizePath('/#contact', lang)} variant="outline" analytics="cta_hero_contact">
+        {t.hero.ctaContact}
+      </Button>
       <Button href={site.resumePath} variant="link" external download analytics="resume_download">
-        Résumé (PDF)
+        {t.hero.resume}
       </Button>
     </div>
 
-    <p class="hero__availability">{site.availability}</p>
-    <p class="hero__location">{site.location.label}</p>
+    <p class="hero__availability">{t.hero.availability}</p>
+    <p class="hero__location">{t.hero.location}</p>
   </div>
 </section>
 

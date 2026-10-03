@@ -2,22 +2,37 @@
 import { primaryNav, site } from '../../lib/site';
 import FalconMark from '../brand/FalconMark.astro';
 import ThemeToggle from './ThemeToggle.astro';
+import LangSwitcher from './LangSwitcher.astro';
+import { getLangFromUrl, localizePath, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const navLabels: Record<string, string> = {
+  '/#work': t.nav.work,
+  '/#experience': t.nav.experience,
+  '/#expertise': t.nav.expertise,
+  '/#contact': t.nav.contact,
+};
+const nav = primaryNav.map((item) => ({
+  label: navLabels[item.href] ?? item.label,
+  href: localizePath(item.href, lang),
+}));
 ---
 
 <header class="site-header">
   <div class="wrap site-header__inner">
-    <a href="/" class="site-header__id" aria-label={`${site.name} — home`}>
+    <a href={localizePath('/', lang)} class="site-header__id" aria-label={`${site.name} — home`}>
       <FalconMark size={20} />
       <span class="site-header__name">Vinicius Silva</span>
     </a>
 
-    <nav class="site-header__nav" aria-label="Primary">
-      {primaryNav.map((item) => (
-        <a href={item.href}>{item.label}</a>
-      ))}
+    <nav class="site-header__nav" aria-label={t.a11y.primaryNav}>
+      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
     </nav>
 
     <div class="site-header__actions">
+      <LangSwitcher />
       <ThemeToggle />
       <a
         class="site-header__resume"
@@ -26,7 +41,7 @@ import ThemeToggle from './ThemeToggle.astro';
         rel="noopener"
         data-analytics="resume_download"
       >
-        Résumé <span aria-hidden="true">↗</span>
+        {t.header.resume} <span aria-hidden="true">↗</span>
       </a>
     </div>
   </div>
@@ -56,6 +71,7 @@ import ThemeToggle from './ThemeToggle.astro';
     gap: 9px;
     text-decoration: none;
     color: var(--color-ink);
+    flex-shrink: 0;
   }
   .site-header__name {
     font-family: var(--font-display);
@@ -84,7 +100,7 @@ import ThemeToggle from './ThemeToggle.astro';
     gap: var(--space-3);
   }
   .site-header__resume {
-    display: inline-flex;
+    display: none;
     align-items: center;
     gap: 6px;
     font-family: var(--font-mono);
@@ -105,6 +121,11 @@ import ThemeToggle from './ThemeToggle.astro';
 
   @media (min-width: 700px) {
     .site-header__nav {
+      display: inline-flex;
+    }
+  }
+  @media (min-width: 900px) {
+    .site-header__resume {
       display: inline-flex;
     }
   }
