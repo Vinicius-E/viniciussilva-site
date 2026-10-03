@@ -7,7 +7,7 @@
    ========================================================================= */
 
 const en = {
-  nav: { work: 'Work', experience: 'Experience', expertise: 'Expertise', contact: 'Contact' },
+  nav: { work: 'Work', experience: 'Experience', expertise: 'Expertise', contact: 'Contact', portfolio: 'Portfolio' },
   a11y: {
     skip: 'Skip to content',
     primaryNav: 'Primary',
@@ -192,7 +192,7 @@ const en = {
 export type Dict = typeof en;
 
 const pt: Dict = {
-  nav: { work: 'Trabalhos', experience: 'Experiência', expertise: 'Especialidades', contact: 'Contato' },
+  nav: { work: 'Trabalhos', experience: 'Experiência', expertise: 'Especialidades', contact: 'Contato', portfolio: 'Portfólio' },
   a11y: {
     skip: 'Pular para o conteúdo',
     primaryNav: 'Principal',
@@ -375,7 +375,7 @@ const pt: Dict = {
 };
 
 const es: Dict = {
-  nav: { work: 'Trabajos', experience: 'Experiencia', expertise: 'Especialidades', contact: 'Contacto' },
+  nav: { work: 'Trabajos', experience: 'Experiencia', expertise: 'Especialidades', contact: 'Contacto', portfolio: 'Portafolio' },
   a11y: {
     skip: 'Saltar al contenido',
     primaryNav: 'Principal',

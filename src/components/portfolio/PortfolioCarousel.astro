@@ -1,0 +1,515 @@
+---
+import { portfolio, portfolioCategories, portfolioStack } from '../../lib/portfolio-data';
+
+const total = portfolio.length;
+const cats = Object.entries(portfolioCategories);
+const demoHref = (slug: string) => `/demos/${slug}/index.html`;
+---
+
+<section class="pf" data-pf aria-labelledby="pf-title">
+  <div class="wrap">
+    <header class="pf__head">
+      <p class="mono-label">Portfolio</p>
+      <h1 id="pf-title" class="pf__title">{total} working systems. Open any of them.</h1>
+      <p class="pf__intro">
+        Each project is a complete, usable web system: landing page, two access profiles with different
+        permissions, a guided form, searchable list, KPI dashboard and an AI-assistant panel. They run entirely in
+        your browser with fictional data — nothing is sent to a server, and the AI panel is simulated by local
+        rules in this static build. Every one passed an automated visual quality gate (contrast, focus, touch
+        targets, responsive overflow).
+      </p>
+      <p class="pf__note">The demo interfaces are in Brazilian Portuguese, the language of their target users.</p>
+    </header>
+
+    <div class="pf__filters" role="group" aria-label="Filter by category" data-filters>
+      <button type="button" class="chip" data-cat="all" aria-pressed="true">All <span>{total}</span></button>
+      {
+        cats.map(([id, label]) => (
+          <button type="button" class="chip" data-cat={id} aria-pressed="false">
+            {label} <span>{portfolio.filter((p) => p.category === id).length}</span>
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="pf__carousel" role="region" aria-roledescription="carousel" aria-label="Portfolio projects" tabindex="-1" data-region>
+      <div class="pf__viewport">
+        <div class="pf__track" data-track>
+          {
+            portfolio.map((p, i) => (
+              <div
+                class="slide"
+                id={p.slug}
+                data-slide
+                data-cat={p.category}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${p.name}, project ${i + 1} of ${total}`}
+                style={`--a:${p.accent}`}
+              >
+                <a class="slide__shot" href={demoHref(p.slug)} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img
+                    src={`/portfolio/${p.slug}.webp`}
+                    width="1200"
+                    height="750"
+                    alt=""
+                    loading={i < 2 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                </a>
+                <div class="slide__body">
+                  <p class="slide__eyebrow">
+                    <span class="slide__logo" aria-hidden="true">{p.glyph}</span>
+                    <span>
+                      <span data-num>{String(i + 1).padStart(2, '0')}</span> / {total} · {portfolioCategories[p.category]}
+                    </span>
+                  </p>
+                  <h2 class="slide__title">{p.name}</h2>
+                  <p class="slide__summary">{p.summary}</p>
+                  <dl class="slide__facts">
+                    <div>
+                      <dt>Problem</dt>
+                      <dd>{p.problem}</dd>
+                    </div>
+                    <div>
+                      <dt>Highlight</dt>
+                      <dd>{p.highlight}</dd>
+                    </div>
+                  </dl>
+                  <ul class="slide__stack" aria-label="Technology">
+                    {portfolioStack.map((s) => <li>{s}</li>)}
+                  </ul>
+                  <p class="slide__cta">
+                    <a class="btn-demo" href={demoHref(p.slug)} target="_blank" rel="noopener">
+                      Open live demo <span aria-hidden="true">↗</span>
+                      <span class="sr-only">of {p.name} (opens in a new tab)</span>
+                    </a>
+                    <span class="slide__hint">Pick a profile on the login screen — no sign-up.</span>
+                  </p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="pf__controls">
+        <button type="button" class="nav" data-prev aria-label="Previous project"><span aria-hidden="true">←</span></button>
+        <p class="pf__count" aria-live="polite" data-count>1 / {total}</p>
+        <button type="button" class="nav" data-next aria-label="Next project"><span aria-hidden="true">→</span></button>
+      </div>
+
+      <nav class="pf__rail" aria-label="Jump to a project">
+        <ul data-rail>
+          {
+            portfolio.map((p, i) => (
+              <li data-rail-item data-cat={p.category}>
+                <button type="button" data-slug={p.slug} style={`--a:${p.accent}`} aria-label={`${p.name}, project ${i + 1}`} title={p.name}>
+                  <span aria-hidden="true">{p.glyph}</span>
+                </button>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-pf]');
+  if (root) {
+    root.classList.add('is-js');
+    const track = root.querySelector<HTMLElement>('[data-track]')!;
+    const slides = [...root.querySelectorAll<HTMLElement>('[data-slide]')];
+    const railItems = [...root.querySelectorAll<HTMLElement>('[data-rail-item]')];
+    const count = root.querySelector<HTMLElement>('[data-count]')!;
+    const region = root.querySelector<HTMLElement>('[data-region]')!;
+    const chips = [...root.querySelectorAll<HTMLButtonElement>('[data-cat].chip')];
+    let cat = 'all';
+    let idx = 0;
+    const visible = () => slides.filter((s) => cat === 'all' || s.dataset.cat === cat);
+
+    function render(focusSlide = false) {
+      const list = visible();
+      if (!list.length) return;
+      idx = (idx + list.length) % list.length;
+      for (const s of slides) {
+        const on = list.includes(s);
+        s.hidden = !on;
+        const cur = on && list[idx] === s;
+        s.toggleAttribute('inert', !cur);
+        s.setAttribute('aria-hidden', cur ? 'false' : 'true');
+      }
+      track.style.transform = `translateX(${-idx * 100}%)`;
+      count.textContent = `${idx + 1} / ${list.length}`;
+      const cur = list[idx];
+      for (const r of railItems) {
+        const b = r.querySelector('button')!;
+        const on = cat === 'all' || r.dataset.cat === cat;
+        r.hidden = !on;
+        const is = b.dataset.slug === cur.id;
+        if (is) b.setAttribute('aria-current', 'true');
+        else b.removeAttribute('aria-current');
+        if (is) b.scrollIntoView({ block: 'nearest', inline: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      }
+      history.replaceState(null, '', '#' + cur.id);
+      if (focusSlide) cur.querySelector<HTMLElement>('.btn-demo')?.focus({ preventScroll: true });
+    }
+    const step = (d: number) => {
+      idx += d;
+      render();
+    };
+    root.querySelector('[data-prev]')!.addEventListener('click', () => step(-1));
+    root.querySelector('[data-next]')!.addEventListener('click', () => step(1));
+    region.addEventListener('keydown', (e) => {
+      const t = e.target as HTMLElement;
+      if (t.closest('input, textarea, select')) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); }
+      if (e.key === 'Home') { e.preventDefault(); idx = 0; render(); }
+      if (e.key === 'End') { e.preventDefault(); idx = visible().length - 1; render(); }
+    });
+    root.querySelectorAll<HTMLButtonElement>('[data-rail] button').forEach((b) =>
+      b.addEventListener('click', () => {
+        idx = visible().findIndex((s) => s.id === b.dataset.slug);
+        render();
+      }),
+    );
+    for (const c of chips) {
+      c.addEventListener('click', () => {
+        cat = c.dataset.cat!;
+        idx = 0;
+        for (const o of chips) o.setAttribute('aria-pressed', String(o === c));
+        render();
+      });
+    }
+    // swipe on touch
+    let x0: number | null = null;
+    region.addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), { passive: true });
+    region.addEventListener('touchend', (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      x0 = null;
+      if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+    });
+    const hash = decodeURIComponent(location.hash.slice(1));
+    const start = visible().findIndex((s) => s.id === hash);
+    if (start >= 0) idx = start;
+    render();
+  }
+</script>
+
+<style>
+  .pf {
+    padding-block: var(--section-y);
+  }
+  .pf__head {
+    max-width: var(--measure-wide);
+    margin-bottom: var(--space-6);
+  }
+  .pf__title {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    line-height: var(--leading-tight);
+    margin: var(--space-2) 0 var(--space-4);
+    color: var(--color-ink);
+    max-width: 22ch;
+  }
+  .pf__intro {
+    color: var(--color-ink-soft);
+    max-width: var(--measure);
+    margin: 0 0 var(--space-3);
+    line-height: var(--leading-body);
+  }
+  .pf__note {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: var(--color-steel);
+  }
+
+  .pf__filters {
+    display: none;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+  }
+  .is-js .pf__filters {
+    display: flex;
+  }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    background: transparent;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-pill);
+    padding: 9px 14px;
+    min-height: 44px;
+    cursor: pointer;
+  }
+  .chip span {
+    color: var(--color-steel);
+    margin-left: 4px;
+  }
+  .chip:hover {
+    border-color: var(--color-accent);
+    color: var(--color-ink);
+  }
+  .chip[aria-pressed='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-ground);
+  }
+  .chip[aria-pressed='true'] span {
+    color: var(--color-ground);
+  }
+  .chip:focus-visible,
+  .nav:focus-visible,
+  .pf__rail button:focus-visible,
+  .btn-demo:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* without JS every project stacks as a card list */
+  .pf__viewport {
+    overflow: hidden;
+  }
+  .pf__track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+  .is-js .pf__track {
+    display: flex;
+    gap: 0;
+    transition: transform var(--dur-slow) var(--ease);
+  }
+  .slide {
+    display: grid;
+    gap: var(--space-5);
+    align-items: center;
+    background: var(--color-raised);
+    border: 1px solid var(--color-hairline);
+    border-top: 4px solid var(--a);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    box-shadow: var(--shadow-card);
+  }
+  .is-js .slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    box-shadow: none;
+  }
+  .slide[hidden] {
+    display: none;
+  }
+  .slide__shot {
+    display: block;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+  .slide__shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+  }
+  .slide__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+  .slide__logo {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: var(--a);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .slide__title {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: var(--leading-tight);
+    margin: 0 0 var(--space-3);
+    color: var(--color-ink);
+  }
+  .slide__summary {
+    margin: 0 0 var(--space-4);
+    color: var(--color-ink-soft);
+    line-height: var(--leading-body);
+    font-size: var(--step-0);
+  }
+  .slide__facts {
+    margin: 0 0 var(--space-4);
+    display: grid;
+    gap: var(--space-3);
+  }
+  .slide__facts dt {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+  }
+  .slide__facts dd {
+    margin: 2px 0 0;
+    color: var(--color-ink);
+    font-size: var(--step--1);
+  }
+  .slide__stack {
+    list-style: none;
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .slide__stack li {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-pill);
+    padding: 4px 10px;
+  }
+  .slide__cta {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+  }
+  .btn-demo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 18px;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .btn-demo:hover {
+    background: var(--color-accent-strong);
+  }
+  .slide__hint {
+    font-size: var(--step--1);
+    color: var(--color-steel);
+  }
+
+  .pf__controls,
+  .pf__rail {
+    display: none;
+  }
+  .is-js .pf__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+  }
+  .nav {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--color-hairline);
+    background: var(--color-raised);
+    color: var(--color-ink);
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  .nav:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+  .pf__count {
+    margin: 0;
+    min-width: 7ch;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-ink-soft);
+  }
+  .is-js .pf__rail {
+    display: block;
+    margin-top: var(--space-4);
+  }
+  .pf__rail ul {
+    list-style: none;
+    margin: 0;
+    padding: 4px 2px 10px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .pf__rail li[hidden] {
+    display: none;
+  }
+  .pf__rail button {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    border: 2px solid transparent;
+    background: var(--a);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    opacity: 1;
+  }
+  .pf__rail button:hover {
+    opacity: 1;
+  }
+  .pf__rail button[aria-current='true'] {
+    opacity: 1;
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 2px var(--color-ground);
+  }
+
+  @media (min-width: 860px) {
+    .slide {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: var(--space-6);
+      padding: var(--space-6);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .is-js .pf__track {
+      transition: none;
+    }
+  }
+</style>

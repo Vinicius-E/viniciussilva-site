@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PortfolioCarousel from './PortfolioCarousel.astro';
+import { site } from '../../lib/site';
+import { getLangFromUrl, localizePath } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+---
+
+<BaseLayout
+  title={`Portfolio — 28 working systems · ${site.name}`}
+  description="28 complete, usable web systems built end to end: logistics, engineering, career, local business and social impact. Open any live demo."
+  path={localizePath('/portfolio', lang)}
+>
+  <PortfolioCarousel />
+</BaseLayout>

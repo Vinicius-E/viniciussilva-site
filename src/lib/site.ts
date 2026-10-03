@@ -70,6 +70,7 @@ export type NavItem = { label: string; href: string };
 
 export const primaryNav: NavItem[] = [
   { label: 'Work', href: '/#work' },
+  { label: 'Portfolio', href: '/portfolio' },
   { label: 'Experience', href: '/#experience' },
   { label: 'Expertise', href: '/#expertise' },
   { label: 'Contact', href: '/#contact' },

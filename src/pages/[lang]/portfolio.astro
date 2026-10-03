@@ -1,0 +1,9 @@
+---
+import PortfolioPage from '../../components/portfolio/PortfolioPage.astro';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'pt' } }, { params: { lang: 'es' } }];
+}
+---
+
+<PortfolioPage />
