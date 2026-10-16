@@ -8,8 +8,8 @@ export const site = {
   name: 'Vinicius Silva',
   legalName: 'Vinicius Eduardo da Silva',
 
-  // TODO[domain]: confirm final domain, then update astro.config.mjs `site` too.
-  url: 'https://viniciussilva.dev',
+  // Canonical origin. Change here AND in astro.config.mjs (`SITE`) when a custom domain is set.
+  url: 'https://viniciussilva-site.viniciussilva-site.workers.dev',
 
   // Prose copy (positioning, availability, meta description, location label) is
   // per-locale in src/i18n/ui.ts. Only language-neutral facts live here.
@@ -36,8 +36,13 @@ export const site = {
     github: 'https://github.com/Vinicius-E',
   },
 
-  // TODO[asset]: final résumé PDF (EN). Optional PT-BR version later.
-  resumePath: '/vinicius-silva-cv.pdf',
+  // One résumé per language (en-US / pt-BR / es-ES). Use resumeFor(lang) in components.
+  resumes: {
+    en: '/vinicius-silva-cv-en-us.pdf',
+    pt: '/vinicius-silva-cv-pt-br.pdf',
+    es: '/vinicius-silva-cv-es-es.pdf',
+  },
+  resumePath: '/vinicius-silva-cv-en-us.pdf',
 
   languages: [
     { name: 'Portuguese', level: 'Native' },
@@ -80,3 +85,7 @@ export const primaryNav: NavItem[] = [
 export const mailtoHref = `mailto:${site.contact.email}?subject=${encodeURIComponent(
   site.contact.emailSubject,
 )}`;
+
+export function resumeFor(lang: 'en' | 'pt' | 'es'): string {
+  return site.resumes[lang];
+}

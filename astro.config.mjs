@@ -3,9 +3,9 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
-// TODO[domain]: replace with the final domain once chosen and registered.
 // Used for canonical URLs, sitemap, JSON-LD and absolute OG image URLs.
-const SITE = 'https://viniciussilva.dev';
+// Keep in sync with src/lib/site.ts (`site.url`). Swap both when a custom domain is set.
+const SITE = 'https://viniciussilva-site.viniciussilva-site.workers.dev';
 
 // https://astro.build/config
 export default defineConfig({

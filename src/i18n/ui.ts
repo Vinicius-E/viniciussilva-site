@@ -9,6 +9,9 @@
 const en = {
   nav: { work: 'Work', experience: 'Experience', expertise: 'Expertise', contact: 'Contact', portfolio: 'Portfolio' },
   a11y: {
+    theme: 'Switch colour theme',
+    themeLabel: 'Theme',
+    home: 'home',
     skip: 'Skip to content',
     primaryNav: 'Primary',
     footerNav: 'Footer',
@@ -76,7 +79,7 @@ const en = {
   expertise: {
     label: 'Expertise',
     heading: 'What I bring to a system.',
-    intro: 'Grouped by capability, ordered by depth.',
+    intro: 'Grouped by capability. Filled marker: core, used daily. Hollow: working knowledge.',
     groups: [
       {
         name: 'Backend & Distributed Systems',
@@ -165,11 +168,11 @@ const en = {
   closing: {
     aria: 'Get in touch',
     line: "If any of this matches what you're hiring for or building, the next step is a short conversation.",
-    cta: 'Start a conversation',
+    cta: 'Get in touch',
   },
   contact: {
     heading: "Let's talk.",
-    emailMe: 'Email me',
+    emailMe: 'Get in touch',
     linkedin: 'LinkedIn',
     github: 'GitHub',
     resume: 'Résumé (PDF)',
@@ -180,6 +183,72 @@ const en = {
     email: 'Email',
     legal: '· Based in Blumenau, Brazil (UTC−3) · Built with Astro',
     backToTop: 'Back to top',
+  },
+  sys: {
+    signal: 'Signal',
+    hero: {
+      tags: ['Java · Spring Boot', 'React · Angular', 'Event-driven systems', 'Squad Leader', 'Open to international roles'],
+      tagsLabel: 'Profile at a glance',
+    },
+    peak: {
+      label: 'System view',
+      heading: 'How I think about a system.',
+      intro: 'A generic, anonymised architecture: the shape of the platforms I build. No client data, only structure.',
+      diagramLabel: 'Architecture diagram: clients, REST API, event bus, domain services and database, with events flowing between them.',
+      nodes: { client: 'Web · Mobile', api: 'REST API · Spring Boot', bus: 'Event bus · RabbitMQ', services: 'Domain services', db: 'PostgreSQL', obs: 'Observability' },
+      steps: [
+        'People use web and mobile clients.',
+        'A REST API validates input and owns the rules.',
+        'State changes become events on a bus.',
+        'Independent services react to those events.',
+        'Data is persisted, observed and kept evolvable.',
+      ],
+    },
+    caseLabels: { problem: 'Problem', built: 'What I built', stack: 'Stack', result: 'Result' },
+    cases: [
+      {
+        tag: 'Industrial manufacturing client',
+        title: 'Industrial Operations Platform',
+        problem: 'Materials and moulds moved through storage and a finishing area in high volume, tracked in spreadsheets, labels and memory. As volume grew, finding them and knowing what had happened to them got slower and less reliable.',
+        built: 'A warehouse and operations platform that began as storage and finishing-area management and grew into a web and mobile system. Sole engineer, from discovery to production.',
+        stack: 'Java 21 · Spring Boot · PostgreSQL · Flyway · JWT · React · TypeScript · React Native',
+        result: 'The operations team can locate materials and moulds, see how stock moved and who moved it, and reshape the storage structure themselves, without waiting for a release. In active use.',
+        href: true,
+      },
+      {
+        tag: 'Senior Sistemas · Squad Leader',
+        title: 'Document & Signature Platform',
+        problem: 'Document-management and digital-signature platforms used by thousands of corporate accounts, split across dozens of interdependent microservices that had to ship without breaking each other.',
+        built: 'Feature delivery end to end across Java and Spring Boot services and Angular, with event-driven RabbitMQ integrations across dozens of microservices, running release planning as Squad Leader.',
+        stack: 'Java · Spring Boot · Angular · RabbitMQ',
+        result: 'Features delivered end to end, releases kept free of breaking changes across services, and log traceability driven with Kibana and Logstash.',
+        href: false,
+      },
+      {
+        tag: 'Cast Group · enterprise and public sector',
+        title: 'Multi-client Engineering',
+        problem: 'Enterprise and public-sector teams that needed full-stack software: manual drafting of government procurement notices, a legacy JSF logistics system, statewide apps.',
+        built: 'Full-stack delivery for an international industrial group, a state court, a steelmaker and a state IT company, with React and Angular front ends over Java, Spring Boot, Quarkus and Node.js services.',
+        stack: 'Java · Spring Boot · Quarkus · Node.js · React · Angular',
+        result: 'A browser extension that cut days of drafting to minutes (state court), a legacy JSF-to-Quarkus migration (steelmaker), and statewide school asset-tracking and hospital scheduling apps.',
+        href: false,
+      },
+    ],
+    portfolio: {
+      heading: 'Working systems, not mockups.',
+      body: 'A catalogue of complete web systems with fictional data: two access profiles, a guided form, a KPI dashboard, in English, Portuguese and Spanish. Open any of them in your browser.',
+      cta: 'Browse the portfolio',
+    },
+    map: { core: 'Core', working: 'Working', legend: 'Filled: core. Hollow: working knowledge.' },
+    proof: {
+      label: 'Proof',
+      heading: 'What others say, and where to check my work.',
+      quotes: [] as { text: string; name: string; role: string }[],
+      links: 'Career history and code',
+    },
+    pf: { label: 'Catalogue', heading: 'Every system, at a glance.', intro: 'The same projects as the carousel above, grouped by category. Open any of them in your browser; the data is fictional.', open: 'Open live demo', sky: 'Constellation of projects: each dot is one system, grouped by category.', hint: 'Tap a dot to jump to that project' },
+    contactReply: 'I reply within 48 business hours.',
+    resumeLang: 'PDF · EN',
   },
   caseNotice: 'This case study is currently available in English only.',
   notFound: {
@@ -194,6 +263,9 @@ export type Dict = typeof en;
 const pt: Dict = {
   nav: { work: 'Trabalhos', experience: 'Experiência', expertise: 'Especialidades', contact: 'Contato', portfolio: 'Portfólio' },
   a11y: {
+    theme: 'Alternar tema de cores',
+    themeLabel: 'Tema',
+    home: 'início',
     skip: 'Pular para o conteúdo',
     primaryNav: 'Principal',
     footerNav: 'Rodapé',
@@ -261,7 +333,7 @@ const pt: Dict = {
   expertise: {
     label: 'Especialidades',
     heading: 'O que eu trago para um sistema.',
-    intro: 'Agrupado por competência, ordenado por profundidade.',
+    intro: 'Agrupado por competência. Marcador cheio: domínio principal, uso diário. Vazio: conhecimento de trabalho.',
     groups: [
       {
         name: 'Back-end e Sistemas Distribuídos',
@@ -350,11 +422,11 @@ const pt: Dict = {
   closing: {
     aria: 'Fale comigo',
     line: 'Se algo disso combina com o que você está contratando ou construindo, o próximo passo é uma conversa rápida.',
-    cta: 'Começar uma conversa',
+    cta: 'Fale comigo',
   },
   contact: {
     heading: 'Vamos conversar.',
-    emailMe: 'Enviar e-mail',
+    emailMe: 'Fale comigo',
     linkedin: 'LinkedIn',
     github: 'GitHub',
     resume: 'Currículo (PDF)',
@@ -365,6 +437,72 @@ const pt: Dict = {
     email: 'E-mail',
     legal: '· Em Blumenau, Brasil (UTC−3) · Feito com Astro',
     backToTop: 'Voltar ao topo',
+  },
+  sys: {
+    signal: 'Sinal',
+    hero: {
+      tags: ['Java · Spring Boot', 'React · Angular', 'Sistemas orientados a eventos', 'Squad Leader', 'Aberto a vagas internacionais'],
+      tagsLabel: 'Perfil resumido',
+    },
+    peak: {
+      label: 'Visão de sistema',
+      heading: 'Como eu penso um sistema.',
+      intro: 'Uma arquitetura genérica e anonimizada: o formato das plataformas que construo. Nenhum dado de cliente, só estrutura.',
+      diagramLabel: 'Diagrama de arquitetura: clientes, API REST, barramento de eventos, serviços de domínio e banco de dados, com eventos fluindo entre eles.',
+      nodes: { client: 'Web · Mobile', api: 'API REST · Spring Boot', bus: 'Barramento · RabbitMQ', services: 'Serviços de domínio', db: 'PostgreSQL', obs: 'Observabilidade' },
+      steps: [
+        'Pessoas usam clientes web e mobile.',
+        'Uma API REST valida a entrada e guarda as regras.',
+        'Mudanças de estado viram eventos no barramento.',
+        'Serviços independentes reagem a esses eventos.',
+        'Os dados são persistidos, observados e mantidos evolutivos.',
+      ],
+    },
+    caseLabels: { problem: 'Problema', built: 'O que construí', stack: 'Stack', result: 'Resultado' },
+    cases: [
+      {
+        tag: 'Cliente industrial (indústria de manufatura)',
+        title: 'Plataforma de Operações Industriais',
+        problem: 'Materiais e moldes circulavam em alto volume entre estoque e área de acabamento, controlados em planilhas, etiquetas e na memória das pessoas. Com o crescimento, localizá-los e saber o que aconteceu com eles ficou mais lento e menos confiável.',
+        built: 'Uma plataforma de armazém e operações que começou como gestão de estoque e da área de acabamento e cresceu até virar um sistema web e mobile. Único engenheiro, da descoberta à produção.',
+        stack: 'Java 21 · Spring Boot · PostgreSQL · Flyway · JWT · React · TypeScript · React Native',
+        result: 'A operação localiza materiais e moldes, vê como o estoque se moveu e quem o moveu, e reconfigura a estrutura de armazenagem sozinha, sem esperar uma release. Em uso ativo.',
+        href: true,
+      },
+      {
+        tag: 'Senior Sistemas · Squad Leader',
+        title: 'Plataforma de Documentos e Assinaturas',
+        problem: 'Plataformas de gestão de documentos e assinatura digital usadas por milhares de contas corporativas, distribuídas em dezenas de microsserviços interdependentes que precisavam ser entregues sem quebrar uns aos outros.',
+        built: 'Entrega de funcionalidades de ponta a ponta em serviços Java e Spring Boot e em Angular, com integrações orientadas a eventos via RabbitMQ entre dezenas de microsserviços, conduzindo o planejamento de releases como Squad Leader.',
+        stack: 'Java · Spring Boot · Angular · RabbitMQ',
+        result: 'Funcionalidades entregues de ponta a ponta, releases sem quebras de compatibilidade entre serviços e rastreabilidade de logs com Kibana e Logstash.',
+        href: false,
+      },
+      {
+        tag: 'Cast Group · corporativo e setor público',
+        title: 'Engenharia para múltiplos clientes',
+        problem: 'Times corporativos e do setor público que precisavam de software full-stack: redação manual de editais de compras governamentais, um sistema legado de logística em JSF, aplicações estaduais.',
+        built: 'Entrega full-stack para um grupo industrial internacional, um tribunal estadual, uma siderúrgica e uma empresa estadual de TI, com front-ends React e Angular sobre serviços Java, Spring Boot, Quarkus e Node.js.',
+        stack: 'Java · Spring Boot · Quarkus · Node.js · React · Angular',
+        result: 'Uma extensão de navegador que reduziu dias de redação a minutos (tribunal estadual), a migração de um legado JSF para Quarkus (siderúrgica) e aplicações estaduais de controle de patrimônio escolar e agendamento hospitalar.',
+        href: false,
+      },
+    ],
+    portfolio: {
+      heading: 'Sistemas funcionando, não maquetes.',
+      body: 'Um catálogo de sistemas web completos com dados fictícios: dois perfis de acesso, formulário guiado e painel de indicadores, em português, inglês e espanhol. Abra qualquer um no navegador.',
+      cta: 'Ver o portfólio',
+    },
+    map: { core: 'Principal', working: 'Trabalho', legend: 'Cheio: principal. Vazio: conhecimento de trabalho.' },
+    proof: {
+      label: 'Provas',
+      heading: 'O que dizem de mim e onde conferir meu trabalho.',
+      quotes: [] as { text: string; name: string; role: string }[],
+      links: 'Histórico de carreira e código',
+    },
+    pf: { label: 'Catálogo', heading: 'Todos os sistemas, de relance.', intro: 'Os mesmos projetos do carrossel acima, agrupados por categoria. Abra qualquer um no navegador; os dados são fictícios.', open: 'Abrir demo ao vivo', sky: 'Constelação de projetos: cada ponto é um sistema, agrupado por categoria.', hint: 'Toque em um ponto para ir ao projeto' },
+    contactReply: 'Respondo em até 48 horas úteis.',
+    resumeLang: 'PDF · PT-BR',
   },
   caseNotice: 'Este estudo de caso está disponível apenas em inglês no momento.',
   notFound: {
@@ -377,6 +515,9 @@ const pt: Dict = {
 const es: Dict = {
   nav: { work: 'Trabajos', experience: 'Experiencia', expertise: 'Especialidades', contact: 'Contacto', portfolio: 'Portafolio' },
   a11y: {
+    theme: 'Cambiar tema de color',
+    themeLabel: 'Tema',
+    home: 'inicio',
     skip: 'Saltar al contenido',
     primaryNav: 'Principal',
     footerNav: 'Pie de página',
@@ -444,7 +585,7 @@ const es: Dict = {
   expertise: {
     label: 'Especialidades',
     heading: 'Lo que aporto a un sistema.',
-    intro: 'Agrupado por competencia, ordenado por profundidad.',
+    intro: 'Agrupado por competencia. Marcador lleno: dominio principal, uso diario. Vacío: conocimiento de trabajo.',
     groups: [
       {
         name: 'Back-end y Sistemas Distribuidos',
@@ -533,11 +674,11 @@ const es: Dict = {
   closing: {
     aria: 'Hablemos',
     line: 'Si algo de esto encaja con lo que estás contratando o construyendo, el siguiente paso es una conversación breve.',
-    cta: 'Iniciar una conversación',
+    cta: 'Hablemos',
   },
   contact: {
     heading: 'Hablemos.',
-    emailMe: 'Enviar correo',
+    emailMe: 'Hablemos',
     linkedin: 'LinkedIn',
     github: 'GitHub',
     resume: 'CV (PDF)',
@@ -548,6 +689,72 @@ const es: Dict = {
     email: 'Correo',
     legal: '· En Blumenau, Brasil (UTC−3) · Hecho con Astro',
     backToTop: 'Volver arriba',
+  },
+  sys: {
+    signal: 'Señal',
+    hero: {
+      tags: ['Java · Spring Boot', 'React · Angular', 'Sistemas orientados a eventos', 'Squad Leader', 'Abierto a puestos internacionales'],
+      tagsLabel: 'Perfil de un vistazo',
+    },
+    peak: {
+      label: 'Vista de sistema',
+      heading: 'Cómo pienso un sistema.',
+      intro: 'Una arquitectura genérica y anonimizada: la forma de las plataformas que construyo. Sin datos de clientes, solo estructura.',
+      diagramLabel: 'Diagrama de arquitectura: clientes, API REST, bus de eventos, servicios de dominio y base de datos, con eventos fluyendo entre ellos.',
+      nodes: { client: 'Web · Mobile', api: 'API REST · Spring Boot', bus: 'Bus de eventos · RabbitMQ', services: 'Servicios de dominio', db: 'PostgreSQL', obs: 'Observabilidad' },
+      steps: [
+        'Las personas usan clientes web y mobile.',
+        'Una API REST valida la entrada y custodia las reglas.',
+        'Los cambios de estado se vuelven eventos en un bus.',
+        'Servicios independientes reaccionan a esos eventos.',
+        'Los datos se persisten, se observan y se mantienen evolutivos.',
+      ],
+    },
+    caseLabels: { problem: 'Problema', built: 'Lo que construí', stack: 'Stack', result: 'Resultado' },
+    cases: [
+      {
+        tag: 'Cliente industrial (manufactura)',
+        title: 'Plataforma de Operaciones Industriales',
+        problem: 'Materiales y moldes circulaban en gran volumen entre almacén y área de acabado, controlados en planillas, etiquetas y la memoria de las personas. Al crecer el volumen, ubicarlos y saber qué les había pasado se volvió más lento y menos confiable.',
+        built: 'Una plataforma de almacén y operaciones que empezó como gestión de stock y del área de acabado y creció hasta ser un sistema web y mobile. Único ingeniero, del descubrimiento a producción.',
+        stack: 'Java 21 · Spring Boot · PostgreSQL · Flyway · JWT · React · TypeScript · React Native',
+        result: 'La operación ubica materiales y moldes, ve cómo se movió el stock y quién lo movió, y reconfigura la estructura de almacenamiento por sí misma, sin esperar un release. En uso activo.',
+        href: true,
+      },
+      {
+        tag: 'Senior Sistemas · Squad Leader',
+        title: 'Plataforma de Documentos y Firmas',
+        problem: 'Plataformas de gestión documental y firma digital usadas por miles de cuentas corporativas, repartidas en decenas de microservicios interdependientes que debían entregarse sin romperse entre sí.',
+        built: 'Entrega de funcionalidades de punta a punta en servicios Java y Spring Boot y en Angular, con integraciones orientadas a eventos vía RabbitMQ entre decenas de microservicios, liderando la planificación de releases como Squad Leader.',
+        stack: 'Java · Spring Boot · Angular · RabbitMQ',
+        result: 'Funcionalidades entregadas de punta a punta, releases sin quiebres de compatibilidad entre servicios y trazabilidad de logs con Kibana y Logstash.',
+        href: false,
+      },
+      {
+        tag: 'Cast Group · corporativo y sector público',
+        title: 'Ingeniería para múltiples clientes',
+        problem: 'Equipos corporativos y del sector público que necesitaban software full-stack: redacción manual de licitaciones públicas, un sistema logístico heredado en JSF, aplicaciones estatales.',
+        built: 'Entrega full-stack para un grupo industrial internacional, un tribunal estatal, una siderúrgica y una empresa estatal de TI, con front-ends React y Angular sobre servicios Java, Spring Boot, Quarkus y Node.js.',
+        stack: 'Java · Spring Boot · Quarkus · Node.js · React · Angular',
+        result: 'Una extensión de navegador que redujo días de redacción a minutos (tribunal estatal), la migración de un sistema JSF heredado a Quarkus (siderúrgica) y aplicaciones estatales de control de activos escolares y agenda hospitalaria.',
+        href: false,
+      },
+    ],
+    portfolio: {
+      heading: 'Sistemas funcionando, no maquetas.',
+      body: 'Un catálogo de sistemas web completos con datos ficticios: dos perfiles de acceso, formulario guiado y panel de indicadores, en español, inglés y portugués. Abre cualquiera en el navegador.',
+      cta: 'Ver el portafolio',
+    },
+    map: { core: 'Principal', working: 'Trabajo', legend: 'Lleno: principal. Vacío: conocimiento de trabajo.' },
+    proof: {
+      label: 'Pruebas',
+      heading: 'Lo que dicen de mí y dónde revisar mi trabajo.',
+      quotes: [] as { text: string; name: string; role: string }[],
+      links: 'Trayectoria y código',
+    },
+    pf: { label: 'Catálogo', heading: 'Todos los sistemas, de un vistazo.', intro: 'Los mismos proyectos del carrusel de arriba, agrupados por categoría. Abre cualquiera en el navegador; los datos son ficticios.', open: 'Abrir demo en vivo', sky: 'Constelación de proyectos: cada punto es un sistema, agrupado por categoría.', hint: 'Toca un punto para ir al proyecto' },
+    contactReply: 'Respondo en un máximo de 48 horas hábiles.',
+    resumeLang: 'PDF · ES-ES',
   },
   caseNotice: 'Este caso de estudio está disponible solo en inglés por ahora.',
   notFound: {

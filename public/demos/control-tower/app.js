@@ -27,7 +27,7 @@
   class Remote {
     constructor(token) { this.token = token; this.demo = false; }
     async get(path) {
-      const r = await fetch(path, { headers: { Authorization: 'Bearer ' + this.token }, cache: 'no-store' });
+      const r = await fetch(path, { headers: this.token ? { Authorization: 'Bearer ' + this.token } : {}, cache: 'no-store' });
       if (!r.ok) { const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
       return r.json();
     }
@@ -242,7 +242,7 @@
   // ───────── entrada, tema, idioma ─────────
   async function start(source) {
     src = source; $('#login').hidden = true; $('#app').hidden = false;
-    const ts = await src.tenants(); const sel = $('#tenant'); sel.replaceChildren(); for (const x of ts) sel.append(new Option(x.name + ' (' + x.id + ')', x.id)); tenant = ts[0].id; sel.value = tenant;
+    const ts = await src.tenants(); const sel = $('#tenant'); sel.replaceChildren(); for (const x of ts) sel.append(new Option(x.name + ' (' + x.id + ')', x.id)); let saved = null; try { saved = localStorage.getItem('tower-tenant'); } catch { /* ok */ } tenant = (ts.find((x) => x.id === saved) || ts.find((x) => x.id === 'hive') || ts[0]).id; sel.value = tenant;
     if (src.demo) { const n = el('p', 'hint', t('demo_note')); n.id = 'demonote'; $('#main').prepend(n); n.style.gridColumn = '1 / -1'; }
     known = new Set(); lastOv = null; schedule();
   }
@@ -258,7 +258,7 @@
   });
   $('#demo').addEventListener('click', () => start(new Demo()));
   $('#logout').addEventListener('click', logout);
-  $('#tenant').addEventListener('change', (e) => { tenant = e.target.value; known = new Set(); lastOv = null; projFilter = ''; $('#fproj').replaceChildren(new Option(t('allproj'), '')); schedule(); });
+  $('#tenant').addEventListener('change', (e) => { tenant = e.target.value; try { localStorage.setItem('tower-tenant', tenant); } catch { /* ok */ } known = new Set(); lastOv = null; projFilter = ''; $('#fproj').replaceChildren(new Option(t('allproj'), '')); schedule(); });
   $('#win').addEventListener('change', (e) => { win = Number(e.target.value); refreshOverview(); refreshTimeline(); });
   $('#filters').addEventListener('input', () => { known = new Set(); refreshFeed(); });
   $('#filters').addEventListener('submit', (e) => e.preventDefault());
@@ -267,5 +267,7 @@
   try { const th = localStorage.getItem('tower-theme'); if (th) document.documentElement.dataset.theme = th; } catch { /* ok */ }
   applyLang();
   // abre direto na demonstração com ?demo=1 (usado pela vitrine do portfólio)
-  try { if (new URLSearchParams(location.search).get('demo') === '1') start(new Demo()); else { const tk = sessionStorage.getItem('tower-token'); if (tk) { const r = new Remote(tk); r.tenants().then(() => start(r)).catch(() => {}); } } } catch { /* ok */ }
+  // entrada sem token quando o acesso vem do tailnet e o login é de confiança (Tailscale informa a identidade)
+  const tryTailnet = () => fetch('/v1/whoami', { cache: 'no-store' }).then((w) => { if (!w.ok) throw new Error('sem identidade'); const r = new Remote(''); return r.tenants().then(() => start(r)); }).catch(() => {});
+  try { if (new URLSearchParams(location.search).get('demo') === '1') start(new Demo()); else { const tk = sessionStorage.getItem('tower-token'); if (tk) { const r = new Remote(tk); r.tenants().then(() => start(r)).catch(() => tryTailnet()); } else tryTailnet(); } } catch { /* ok */ }
 })();

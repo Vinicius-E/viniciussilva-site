@@ -25,7 +25,7 @@ const title = `${data.title} — Case Study · ${site.name}`;
 
 const meta = [
   { label: 'Role', value: data.role },
-  { label: 'Timeline', value: data.timeline ?? 'to confirm', todo: !data.timeline },
+  ...(data.timeline ? [{ label: 'Timeline', value: data.timeline }] : []),
   { label: 'Platforms', value: data.platforms.join(' · ') },
   { label: 'Domain', value: data.domain },
 ];
@@ -85,10 +85,8 @@ const mdxComponents = { Banner, Decisions, ArchitectureDiagram, Gallery, Todo };
         {data.stack.mobile.length > 0 && (
           <div><dt>Mobile</dt><dd>{data.stack.mobile.join(' · ')}</dd></div>
         )}
-        {data.stack.delivery.length > 0 ? (
+        {data.stack.delivery.length > 0 && (
           <div><dt>Delivery</dt><dd>{data.stack.delivery.join(' · ')}</dd></div>
-        ) : (
-          <div><dt>Delivery</dt><dd><Todo kind="verify">CI/CD &amp; hosting detail</Todo></dd></div>
         )}
       </dl>
     </div>

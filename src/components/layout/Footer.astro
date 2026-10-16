@@ -1,5 +1,5 @@
 ---
-import { site, mailtoHref } from '../../lib/site';
+import { site, resumeFor, mailtoHref } from '../../lib/site';
 import FalconMark from '../brand/FalconMark.astro';
 import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
@@ -26,7 +26,7 @@ const year = new Date().getFullYear();
       <a href={site.socials.github} target="_blank" rel="noopener" data-analytics="out_github"
         >GitHub <span aria-hidden="true">↗</span></a
       >
-      <a href={site.resumePath} target="_blank" rel="noopener" data-analytics="resume_download"
+      <a href={resumeFor(lang)} target="_blank" rel="noopener" data-analytics="resume_download"
         >{t.header.resume} <span aria-hidden="true">↗</span></a
       >
     </nav>

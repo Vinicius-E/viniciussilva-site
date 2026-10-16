@@ -1,95 +1,140 @@
 ---
-import { getCollection } from 'astro:content';
 import SectionShell from '../layout/SectionShell.astro';
-import WorkCard from './WorkCard.astro';
-import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+import Button from '../ui/Button.astro';
+import WorkSystem from './WorkSystem.astro';
+import { getCollection } from 'astro:content';
+import { getLangFromUrl, localizePath, useTranslations } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+const L = t.sys.caseLabels;
 
-const cases = (await getCollection('cases', ({ data }) => !data.draft)).sort(
-  (a, b) => a.data.order - b.data.order,
-);
+const cases = await getCollection('cases', ({ data }) => !data.draft);
 const featured = cases.find((c) => c.data.featured) ?? cases[0];
-
 const caseCta = lang === 'en' ? t.work.readCase : `${t.work.readCase} ${t.work.caseInEnglish}`;
+
+const thumbs = [
+  { src: '/portfolio/control-tower.webp', w: 1200, h: 833 },
+  { src: '/portfolio/acesso-revisado.webp', w: 1200, h: 886 },
+  { src: '/portfolio/contrato-alerta.webp', w: 1200, h: 886 },
+];
 ---
 
-<SectionShell
-  id="work"
-  label={t.work.label}
-  heading={t.work.heading}
-  intro={t.work.intro}
->
-  {
-    featured && (
-      <WorkCard
-        featured
-        eyebrow={`${featured.data.clientDisplay} · ${featured.data.location}`}
-        title={featured.data.title}
-        body={featured.data.summary}
-        meta={`${t.work.rolePrefix}: ${featured.data.role}  ·  ${[
-          ...featured.data.stack.backend.slice(0, 3),
-          ...featured.data.stack.frontend.slice(0, 1),
-          ...featured.data.stack.mobile.slice(0, 1),
-          ...featured.data.stack.frontend.slice(1, 2),
-        ].join(' · ')}`}
-        href={`/work/${featured.id}`}
-        slug={featured.id}
-        cta={caseCta}
-        image={
-          featured.data.screenshots[1]?.src
-            ? { src: featured.data.screenshots[1].src, alt: featured.data.screenshots[1].alt }
-            : undefined
-        }
-      />
-    )
-  }
+<SectionShell id="work" label={t.work.label} heading={t.work.heading} intro={t.work.intro}>
+  <WorkSystem />
 
-  <div class="work-more">
-    <article class="work-mini" data-reveal>
-      <p class="work-mini__eyebrow">{t.work.mini1Eyebrow}</p>
-      <h3 class="work-mini__title">{t.work.mini1Title}</h3>
-      <p class="work-mini__body">{t.work.mini1Body}</p>
-    </article>
-    <article class="work-mini" data-reveal>
-      <p class="work-mini__eyebrow">{t.work.mini2Eyebrow}</p>
-      <h3 class="work-mini__title">{t.work.mini2Title}</h3>
-      <p class="work-mini__body">{t.work.mini2Body}</p>
-    </article>
+  <div class="cases">
+    {
+      t.sys.cases.map((c) => (
+        <article class="case" data-reveal>
+          <header class="case__head">
+            <p class="case__tag">{c.tag}</p>
+            <h3 class="case__title">{c.title}</h3>
+            {c.href && featured && (
+              <p class="case__link">
+                <Button
+                  href={`/work/${featured.id}`}
+                  variant="link"
+                  analytics="case_open"
+                  analyticsLabel={featured.id}
+                >
+                  {caseCta}
+                </Button>
+              </p>
+            )}
+          </header>
+          <dl class="case__body">
+            <div>
+              <dt>{L.problem}</dt>
+              <dd>{c.problem}</dd>
+            </div>
+            <div>
+              <dt>{L.built}</dt>
+              <dd>{c.built}</dd>
+            </div>
+            <div>
+              <dt>{L.stack}</dt>
+              <dd class="case__stack">{c.stack}</dd>
+            </div>
+            <div>
+              <dt>{L.result}</dt>
+              <dd>{c.result}</dd>
+            </div>
+          </dl>
+        </article>
+      ))
+    }
   </div>
 
   <p class="work-note">{t.work.note}</p>
+
+  <a class="teaser" id="portfolio" href={localizePath('/portfolio', lang)} data-analytics="cta_portfolio" data-reveal>
+    <div class="teaser__thumbs" aria-hidden="true">
+      {thumbs.map((i) => <img src={i.src} width={i.w} height={i.h} alt="" loading="lazy" decoding="async" />)}
+    </div>
+    <div class="teaser__text">
+      <p class="mono-label">{t.nav.portfolio}</p>
+      <h3 class="teaser__heading">{t.sys.portfolio.heading}</h3>
+      <p class="teaser__body">{t.sys.portfolio.body}</p>
+      <span class="teaser__cta">{t.sys.portfolio.cta} <span aria-hidden="true">→</span></span>
+    </div>
+  </a>
 </SectionShell>
 
 <style>
-  .work-more {
+  .cases {
     display: grid;
-    gap: var(--space-4);
-    margin-top: var(--space-4);
+    gap: 0;
+    border-top: 1px solid var(--color-ink);
   }
-  .work-mini {
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-    padding: var(--space-5);
+  .case {
+    display: grid;
+    gap: var(--space-4) var(--space-7);
+    padding-block: var(--space-6);
+    border-bottom: 1px solid var(--color-hairline);
   }
-  .work-mini__eyebrow {
+  .case__tag {
     font-family: var(--font-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.08em;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-steel);
     line-height: 1.7;
   }
-  .work-mini__title {
-    font-size: 1.05rem;
-    margin-top: 6px;
+  .case__title {
+    font-size: var(--step-2);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-top: var(--space-2);
   }
-  .work-mini__body {
+  .case__link {
+    margin-top: var(--space-3);
+  }
+  .case__body {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .case__body > div {
+    display: grid;
+    gap: 4px var(--space-4);
+  }
+  .case__body dt {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    padding-top: 0.25em;
+  }
+  .case__body dd {
     color: var(--color-ink-soft);
-    font-size: 0.92rem;
-    margin-top: 8px;
+    max-width: 62ch;
+  }
+  .case__stack {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--color-ink);
   }
   .work-note {
     margin-top: var(--space-5);
@@ -97,9 +142,70 @@ const caseCta = lang === 'en' ? t.work.readCase : `${t.work.readCase} ${t.work.c
     font-size: var(--step--1);
     max-width: 60ch;
   }
-  @media (min-width: 760px) {
-    .work-more {
-      grid-template-columns: 1fr 1fr;
+
+  .teaser {
+    display: grid;
+    gap: var(--space-5) var(--space-7);
+    margin-top: var(--space-8);
+    padding: var(--space-5);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .teaser:hover {
+    border-color: var(--color-accent);
+    color: inherit;
+  }
+  .teaser__thumbs {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+    align-self: center;
+  }
+  .teaser__thumbs img {
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-sm);
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: top;
+    width: 100%;
+    height: auto;
+  }
+  .teaser__heading {
+    font-size: var(--step-2);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-top: var(--space-2);
+  }
+  .teaser__body {
+    margin-top: var(--space-3);
+    color: var(--color-ink-soft);
+  }
+  .teaser__cta {
+    display: inline-block;
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  @media (min-width: 860px) {
+    .case {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    }
+    .case__body > div {
+      grid-template-columns: 7.5rem minmax(0, 1fr);
+    }
+    .teaser {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+      padding: var(--space-6);
     }
   }
 </style>

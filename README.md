@@ -63,7 +63,7 @@ résumé and reflected in `src/lib/site.ts` and the content collections.
 The current independent engagement is presented as a **"Current work"** block in
 the Experience section and the featured case study — an engineering engagement,
 **not** a company or agency. The industrial client stays anonymised
-("Industrial Manufacturing Client · Santa Catarina, Brazil") until the "Wester"
+("Industrial Manufacturing Client · Santa Catarina, Brazil") until the real client
 name is explicitly authorised.
 
 ## Open items before launch

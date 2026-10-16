@@ -1,6 +1,6 @@
 ---
 /**
- * Lightweight "zoom-out" band between Selected Work and Experience.
+ * Breath band right after the hero: four short, real facts.
  * Spec §A/03: no card chrome, reduced padding, hero-family typography,
  * hairline-separated cells. Four short facts.
  */
@@ -29,7 +29,7 @@ const items = t.snapshot.items;
 
 <style>
   .snapshot {
-    padding-block: var(--section-y-tight);
+    padding-block: var(--section-y);
     border-bottom: 1px solid var(--color-hairline-soft);
   }
   .snapshot__grid {
@@ -51,10 +51,11 @@ const items = t.snapshot.items;
   }
   .snapshot__cell dt {
     font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: -0.01em;
-    color: var(--color-accent);
+    font-weight: 800;
+    font-size: var(--step-2);
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--color-ink);
   }
   .snapshot__cell dd {
     margin-top: 4px;

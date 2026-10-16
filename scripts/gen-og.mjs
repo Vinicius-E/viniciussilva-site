@@ -10,11 +10,11 @@ import sharp from 'sharp';
 const root = path.dirname(fileURLToPath(new URL('.', import.meta.url)));
 const outDir = path.join(root, 'public', 'og');
 
-const INK = '#0e0d10';
-const BONE = '#ece9e3';
-const STEEL = '#837d73';
+const INK = '#0f0d0b';
+const BONE = '#efe9df';
+const STEEL = '#9d9485';
 const EMBER = '#e4562a';
-const HAIR = '#2a2830';
+const HAIR = '#2d2821';
 
 function card({ kicker, title, sub }) {
   // Font stack kept generic so librsvg/fontconfig can resolve it on any host.
@@ -35,10 +35,22 @@ function card({ kicker, title, sub }) {
 
 const images = [
   {
-    file: 'home.png',
+    file: 'home-en.png',
     kicker: 'Senior Software Engineer · Full-Stack',
     title: 'Vinicius Silva',
-    sub: 'Java · Spring Boot · Distributed Systems · Enterprise & Industrial',
+    sub: 'Reliable software for real-world operations.',
+  },
+  {
+    file: 'home-pt.png',
+    kicker: 'Engenheiro de Software Sênior · Full-Stack',
+    title: 'Vinicius Silva',
+    sub: 'Software confiável para operações do mundo real.',
+  },
+  {
+    file: 'home-es.png',
+    kicker: 'Ingeniero de Software Senior · Full-Stack',
+    title: 'Vinicius Silva',
+    sub: 'Software confiable para operaciones del mundo real.',
   },
   {
     file: 'case-industrial.png',

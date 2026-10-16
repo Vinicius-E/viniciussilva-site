@@ -1,6 +1,5 @@
 ---
 import SectionShell from '../layout/SectionShell.astro';
-import Todo from '../ui/Todo.astro';
 import { site } from '../../lib/site';
 import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
@@ -25,8 +24,7 @@ const locationValue = `${site.location.city}, ${site.location.region}, ${country
         <div>
           <dt>{t.about.factWork}</dt>
           <dd>
-            {t.about.workValue} ·{' '}
-            <Todo kind="verify">{t.about.relocationConfirm}: “{site.location.relocation}”</Todo>
+            {t.about.workValue}
           </dd>
         </div>
         <div>

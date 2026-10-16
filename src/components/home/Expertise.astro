@@ -1,10 +1,21 @@
 ---
+/**
+ * Competency MAP, not a logo wall: capability layers stacked the way a system
+ * is (interface → services → data → delivery), joined by a vertical trace,
+ * with engineering practice as the base band. Depth is encoded twice, never by
+ * colour alone: filled vs hollow marker, plus a visually-hidden "core" label.
+ * Source order in ui.ts is "ordered by depth": the first three items per layer are core.
+ */
 import SectionShell from '../layout/SectionShell.astro';
 import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const groups = t.expertise.groups;
+const g = t.expertise.groups;
+// ui.ts order: backend, data, full-stack, cloud, practice → map order
+const layers = [g[2], g[0], g[1], g[3]];
+const base = g[4];
+const CORE = 3;
 ---
 
 <SectionShell
@@ -13,60 +24,155 @@ const groups = t.expertise.groups;
   heading={t.expertise.heading}
   intro={t.expertise.intro}
 >
-  <div class="expertise">
-    {
-      groups.map((g) => (
-        <div class="expertise__group" data-reveal>
-          <h3 class="expertise__name">{g.name}</h3>
-          <ul class="expertise__items">
-            {g.items.map((it) => (
-              <li>{it}</li>
-            ))}
-          </ul>
-        </div>
-      ))
-    }
+  <div class="map">
+    <ol class="map__layers">
+      {
+        layers.map((layer) => (
+          <li class="map__layer" data-reveal>
+            <h3 class="map__name">{layer.name}</h3>
+            <ul class="map__items">
+              {layer.items.map((it, i) => (
+                <li class={`chip${i < CORE ? ' chip--core' : ''}`}>
+                  <span class="chip__mark" aria-hidden="true" />
+                  {it}
+                  {i < CORE && <span class="sr-only"> ({t.sys.map.core})</span>}
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="map__base" data-reveal>
+      <h3 class="map__name">{base.name}</h3>
+      <ul class="map__items">
+        {
+          base.items.map((it, i) => (
+            <li class={`chip${i < CORE ? ' chip--core' : ''}`}>
+              <span class="chip__mark" aria-hidden="true" />
+              {it}
+              {i < CORE && <span class="sr-only"> ({t.sys.map.core})</span>}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <p class="map__legend">
+      <span class="chip__mark chip__mark--on" aria-hidden="true"></span>{t.sys.map.legend}
+    </p>
   </div>
 </SectionShell>
 
 <style>
-  .expertise {
-    display: grid;
-    gap: var(--space-5) var(--space-6);
-  }
-  .expertise__group {
-    border-top: 1px solid var(--color-hairline);
-    padding-top: var(--space-4);
-  }
-  .expertise__name {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-steel);
-    font-weight: 600;
-  }
-  .expertise__items {
+  .map__layers {
     list-style: none;
     padding: 0;
-    margin-top: var(--space-3);
+    position: relative;
+    display: grid;
+    gap: var(--space-5);
+  }
+  /* vertical trace joining the layers */
+  .map__layers::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 14px;
+    bottom: 14px;
+    width: 1px;
+    background: var(--color-ink-soft);
+  }
+  .map__layer {
+    position: relative;
+    display: grid;
+    gap: var(--space-3) var(--space-6);
+    padding-left: var(--space-6);
+  }
+  .map__layer::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--color-ground);
+    border: 2px solid var(--color-accent);
+  }
+  .map__name {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    line-height: 1.5;
+    padding-top: 0.2em;
+  }
+  .map__items {
+    list-style: none;
+    padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 4px 0;
+    gap: 8px;
   }
-  .expertise__items li {
-    font-size: 0.92rem;
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    color: var(--color-ink-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-pill);
+    padding: 5px 12px 5px 10px;
+    background: var(--color-surface);
+  }
+  .chip--core {
     color: var(--color-ink);
+    border-color: var(--color-ink-soft);
+    font-weight: 500;
   }
-  .expertise__items li:not(:last-child)::after {
-    content: '·';
-    margin-inline: 10px;
-    color: var(--color-hairline);
+  .chip__mark {
+    display: inline-block;
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-steel);
   }
-
-  @media (min-width: 720px) {
-    .expertise {
-      grid-template-columns: 1fr 1fr;
+  .chip--core .chip__mark,
+  .chip__mark--on {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  .map__base {
+    margin-top: var(--space-6);
+    padding: var(--space-5);
+    border: 1px solid var(--color-ink);
+    border-radius: var(--radius-md);
+    display: grid;
+    gap: var(--space-3) var(--space-6);
+    background: var(--color-surface);
+  }
+  .map__legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--color-steel);
+  }
+  @media (min-width: 860px) {
+    .map__layer,
+    .map__base {
+      grid-template-columns: 15rem minmax(0, 1fr);
+    }
+    .map__layer {
+      padding-left: var(--space-7);
     }
   }
 </style>

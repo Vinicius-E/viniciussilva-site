@@ -18,9 +18,9 @@ export const defaultLang: Lang = 'en';
 
 /** value for the <html lang> attribute */
 export const htmlLang: Record<Lang, string> = {
-  en: 'en',
+  en: 'en-US',
   pt: 'pt-BR',
-  es: 'es',
+  es: 'es-ES',
 };
 
 export function getLangFromUrl(url: URL): Lang {

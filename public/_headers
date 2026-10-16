@@ -16,3 +16,12 @@
 # The résumé is a download, not a page — keep it out of the index
 /vinicius-silva-cv.pdf
   X-Robots-Tag: noindex
+
+/vinicius-silva-cv-en-us.pdf
+  X-Robots-Tag: noindex
+
+/vinicius-silva-cv-pt-br.pdf
+  X-Robots-Tag: noindex
+
+/vinicius-silva-cv-es-es.pdf
+  X-Robots-Tag: noindex

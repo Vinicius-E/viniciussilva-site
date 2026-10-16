@@ -18,7 +18,8 @@ export function personLd(lang: Lang = 'en') {
     jobTitle: t.role,
     description: t.meta.description,
     url: site.url,
-    image: abs('/og/home.png'),
+    image: abs('/vinicius-photo.jpg'),
+    knowsLanguage: ['pt-BR', 'en'],
     sameAs: [site.socials.linkedin, site.socials.github],
     knowsAbout: [...site.knowsAbout],
     address: {
@@ -37,7 +38,7 @@ export function webSiteLd(lang: Lang = 'en') {
     '@type': 'WebSite',
     name: `${site.name} — ${t.role}`,
     url: site.url,
-    inLanguage: { en: 'en', pt: 'pt-BR', es: 'es' }[lang],
+    inLanguage: { en: 'en-US', pt: 'pt-BR', es: 'es-ES' }[lang],
   };
 }
 

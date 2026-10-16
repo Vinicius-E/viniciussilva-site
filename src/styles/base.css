@@ -195,13 +195,170 @@ samp {
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(22px);
     transition:
-      opacity var(--dur-slow) var(--ease),
-      transform var(--dur-slow) var(--ease);
+      opacity 700ms var(--ease),
+      transform 800ms var(--ease);
   }
   .js [data-reveal].is-visible {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ---- cross-document View Transitions: page + language navigation morph.
+   Progressive enhancement (Chromium/Safari TP); other browsers navigate normally. ---- */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 320ms;
+    animation-timing-function: var(--ease);
+  }
+}
+/* theme switch: let the circular reveal own the animation */
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+::view-transition-group(site-header) {
+  animation-duration: 0s;
+}
+
+/* ---- the signal: a trace down the left edge, one node per section ---- */
+.signal {
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  bottom: 0;
+  left: 12px;
+  width: 1px;
+  pointer-events: none;
+  display: none;
+}
+.js .signal {
+  display: block;
+}
+.signal__line {
+  position: absolute;
+  inset: 0;
+  background: var(--color-hairline);
+}
+.signal__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent);
+  transform-origin: top;
+  transform: scaleY(var(--p, 0));
+}
+.signal__pulse {
+  position: absolute;
+  left: -3px;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  transform: translateY(calc(var(--p, 0) * (100vh - 7px)));
+}
+.signal__node {
+  position: absolute;
+  left: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-ground);
+  border: 1px solid var(--color-steel);
+}
+.signal__node.is-on {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+.signal__readout {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%) rotate(180deg);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-steel);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.signal__readout.is-shown {
+  opacity: 1;
+}
+@media (max-width: 700px) {
+  .signal {
+    left: 5px;
+  }
+  .signal__readout {
+    display: none;
+  }
+}
+@media (max-width: 1100px) and (min-width: 701px) {
+  .signal__readout {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signal__pulse {
+    display: none;
+  }
+}
+
+/* ---- ambient background: a fixed layer that changes by steps as sections change.
+   Behind everything, low opacity, never competes with text. ---- */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ambient__grid {
+  position: absolute;
+  inset: -60px;
+  background-image:
+    linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+  background-size: 56px 56px;
+  opacity: var(--grid-o, 0.5);
+  transform: translate3d(var(--grid-x, 0px), var(--grid-y, 0px), 0);
+  mask-image: radial-gradient(ellipse 70% 60% at var(--gx, 70vw) var(--gy, 20vh), #000 0%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at var(--gx, 70vw) var(--gy, 20vh), #000 0%, transparent 100%);
+  transition: opacity 1.2s var(--ease), transform 1.6s var(--ease);
+}
+.ambient__glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 70vmax;
+  height: 70vmax;
+  margin: -35vmax 0 0 -35vmax;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-accent) 18%, transparent), transparent);
+  opacity: 0.55;
+  transform: translate3d(var(--gx, 70vw), var(--gy, 20vh), 0);
+  transition: transform 1.6s var(--ease), opacity 1.2s var(--ease);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ambient__glow {
+    opacity: 0.9;
+  }
+}
+:root[data-theme='dark'] .ambient__glow {
+  opacity: 0.9;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambient__grid,
+  .ambient__glow {
+    transition: none;
   }
 }

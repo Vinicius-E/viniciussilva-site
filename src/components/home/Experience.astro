@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import SectionShell from '../layout/SectionShell.astro';
 import ExperienceEntry from './ExperienceEntry.astro';
 import Button from '../ui/Button.astro';
-import { site } from '../../lib/site';
+import { site, resumeFor } from '../../lib/site';
 import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
@@ -77,7 +77,7 @@ const caseCta = lang === 'en' ? t.experience.readCase : `${t.experience.readCase
       {t.experience.linkedinFull}
     </Button>
     <span aria-hidden="true" class="xp-links__sep">·</span>
-    <Button href={site.resumePath} variant="link" external download analytics="resume_download">
+    <Button href={resumeFor(lang)} variant="link" external download analytics="resume_download">
       {t.experience.downloadResume}
     </Button>
   </p>
@@ -125,8 +125,33 @@ const caseCta = lang === 'en' ? t.experience.readCase : `${t.experience.readCase
     color: var(--color-steel);
     margin-bottom: var(--space-3);
   }
+  /* timeline: a vertical trace with a node per role */
   .xp-list {
-    border-top: 1px solid var(--color-hairline-soft);
+    position: relative;
+    margin-left: 6px;
+    padding-left: var(--space-6);
+    border-left: 1px solid var(--color-ink-soft);
+  }
+  .xp-list :global(.xp-entry.xp-entry) {
+    position: relative;
+    padding-left: 0;
+  }
+  .xp-list :global(.xp-entry__bar.xp-entry__bar) {
+    display: none;
+  }
+  .xp-list :global(.xp-entry)::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * var(--space-6) - 5px);
+    top: calc(var(--space-5) + 0.55em);
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--color-ground);
+    border: 2px solid var(--color-accent);
+  }
+  .xp-list :global(.xp-entry:first-child)::before {
+    background: var(--color-accent);
   }
   .xp-links {
     display: flex;

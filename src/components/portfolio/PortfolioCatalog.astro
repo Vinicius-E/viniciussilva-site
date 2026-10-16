@@ -1,0 +1,180 @@
+---
+/** All systems grouped by category, with staggered scroll reveals. Same data as the carousel. */
+import { portfolio, portfolioCategories } from '../../lib/portfolio-data';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const demoHref = (href: string) => href + (href.includes('?') ? '&' : '?') + `lang=${lang}`;
+// Produtos com página de apresentação própria por idioma (hrefs); demos soltas (Torre de Controle) seguem recebendo ?lang=
+const itemHref = (p: { href: string; hrefs?: Record<string, string> }) => (p.hrefs ? p.hrefs[lang] : demoHref(p.href));
+const groups = (Object.keys(portfolioCategories) as (keyof typeof portfolioCategories)[]).map((c) => ({
+  id: c,
+  name: portfolioCategories[c][lang],
+  items: portfolio.filter((p) => p.category === c),
+}));
+---
+
+<section class="cat" id="catalogue" data-signal={t.sys.pf.label} aria-labelledby="cat-title">
+  <div class="wrap">
+    <header class="cat__head" data-reveal>
+      <p class="mono-label">{t.sys.pf.label}</p>
+      <h2 id="cat-title" class="cat__title">{t.sys.pf.heading}</h2>
+      <p class="cat__intro">{t.sys.pf.intro}</p>
+    </header>
+
+    {
+      groups.map((g) => (
+        <div class="cat__group" data-cat={g.id}>
+          <h3 class="cat__name" data-reveal>
+            {g.name} <span>{g.items.length}</span>
+          </h3>
+          <ul class="cat__grid">
+            {g.items.map((p, i) => (
+              <li class="card" data-reveal style={`--a:${p.accent};--i:${i}`}>
+                <a class="card__link" href={itemHref(p)} target="_blank" rel="noopener">
+                  <span class="card__shot">
+                    <img src={`/portfolio/${p.slug}.webp`} width="1200" height="750" alt="" loading="lazy" decoding="async" />
+                  </span>
+                  <span class="card__body">
+                    <span class="card__logo" aria-hidden="true">{p.glyph}</span>
+                    <span class="card__title">{p.name}</span>
+                    <span class="card__summary">{p.txt[lang].summary}</span>
+                    <span class="card__cta">{t.sys.pf.open} <span aria-hidden="true">↗</span></span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .cat {
+    padding-block: var(--section-y);
+    border-top: 1px solid var(--color-hairline-soft);
+  }
+  .cat__head {
+    max-width: var(--measure-wide);
+    margin-bottom: var(--space-7);
+  }
+  .cat__title {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.04;
+    margin: var(--space-2) 0 var(--space-3);
+    max-width: 20ch;
+  }
+  .cat__intro {
+    color: var(--color-ink-soft);
+    max-width: var(--measure);
+  }
+  .cat__group {
+    margin-top: var(--space-8);
+  }
+  .cat__name {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-5);
+    border-bottom: 1px solid var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+  .cat__name span {
+    color: var(--color-accent);
+  }
+  .cat__grid {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  }
+  .card {
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+  .card__link {
+    display: grid;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+    border: 1px solid var(--color-hairline);
+    border-top: 3px solid var(--a);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    overflow: hidden;
+    transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .card__link:hover {
+    color: inherit;
+    transform: translateY(-4px);
+    border-color: var(--a);
+    box-shadow: var(--shadow-raised);
+  }
+  .card__shot {
+    display: block;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-hairline-soft);
+    aspect-ratio: 16 / 10;
+    background: var(--color-raised);
+  }
+  .card__shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 600ms var(--ease);
+  }
+  .card__link:hover .card__shot img {
+    transform: scale(1.04);
+  }
+  .card__body {
+    display: grid;
+    gap: 6px;
+    padding: var(--space-4);
+    align-content: start;
+  }
+  .card__logo {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--a);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.72rem;
+  }
+  .card__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-size: var(--step-1);
+    line-height: 1.1;
+    margin-top: 4px;
+  }
+  .card__summary {
+    color: var(--color-ink-soft);
+    font-size: var(--step--1);
+  }
+  .card__cta {
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+</style>

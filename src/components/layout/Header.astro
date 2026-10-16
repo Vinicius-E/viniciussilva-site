@@ -1,5 +1,5 @@
 ---
-import { primaryNav, site } from '../../lib/site';
+import { primaryNav, site, resumeFor } from '../../lib/site';
 import FalconMark from '../brand/FalconMark.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import LangSwitcher from './LangSwitcher.astro';
@@ -23,7 +23,7 @@ const nav = primaryNav.map((item) => ({
 
 <header class="site-header">
   <div class="wrap site-header__inner">
-    <a href={localizePath('/', lang)} class="site-header__id" aria-label={`${site.name} — home`}>
+    <a href={localizePath('/', lang)} class="site-header__id" aria-label={`${site.name} — ${t.a11y.home}`}>
       <FalconMark size={20} />
       <span class="site-header__name">Vinicius Silva</span>
     </a>
@@ -37,7 +37,7 @@ const nav = primaryNav.map((item) => ({
       <ThemeToggle />
       <a
         class="site-header__resume"
-        href={site.resumePath}
+        href={resumeFor(lang)}
         target="_blank"
         rel="noopener"
         data-analytics="resume_download"
@@ -50,6 +50,7 @@ const nav = primaryNav.map((item) => ({
 
 <style>
   .site-header {
+    view-transition-name: site-header;
     position: sticky;
     top: 0;
     z-index: var(--z-header);

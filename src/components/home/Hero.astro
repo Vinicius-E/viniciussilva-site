@@ -1,16 +1,59 @@
 ---
 import Button from '../ui/Button.astro';
-import { site } from '../../lib/site';
+import { resumeFor } from '../../lib/site';
+import { heroMeshWide, heroMeshTall, type Mesh } from '../../lib/mesh';
 import { getLangFromUrl, localizePath, useTranslations } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+const meshes: { key: 'wide' | 'tall'; mesh: Mesh }[] = [
+  { key: 'wide', mesh: heroMeshWide() },
+  { key: 'tall', mesh: heroMeshTall() },
+];
 ---
 
-<section class="hero">
+<section class="hero" data-hero id="hero">
+  <!-- plane 0: technical grid -->
+  <div class="hero__plane hero__grid" aria-hidden="true" style="--k: 0.25"></div>
+
+  <!-- plane 1+2: node mesh (far = dim, near = bright). Two separate compositions. -->
+  {
+    meshes.map(({ key, mesh }) => (
+      <svg
+        class={`hero__plane hero__mesh hero__mesh--${key}`}
+        viewBox={`0 0 ${mesh.w} ${mesh.h}`}
+        preserveAspectRatio={key === 'wide' ? 'xMaxYMid slice' : 'xMidYMid slice'}
+        aria-hidden="true"
+        focusable="false"
+      >
+        <g class="mesh__layer mesh__layer--far" style="--k: 0.55">
+          {mesh.edges
+            .filter((e) => mesh.nodes[e.a].far || mesh.nodes[e.b].far)
+            .map((e) => <path class="mesh__edge" d={e.d} />)}
+          {mesh.nodes.filter((n) => n.far).map((n) => <circle class="mesh__node" cx={n.x} cy={n.y} r={n.r} />)}
+        </g>
+        <g class="mesh__layer mesh__layer--near" style="--k: 1">
+          {mesh.edges
+            .filter((e) => !mesh.nodes[e.a].far && !mesh.nodes[e.b].far)
+            .map((e) => <path class="mesh__edge mesh__edge--near" d={e.d} />)}
+          {mesh.pulses.map((i, n) => (
+            <path
+              class="mesh__pulse"
+              d={mesh.edges[i].d}
+              pathLength="100"
+              style={`--d: ${(n * 0.9).toFixed(1)}s`}
+            />
+          ))}
+          {mesh.nodes.filter((n) => !n.far).map((n) => <circle class="mesh__node mesh__node--near" cx={n.x} cy={n.y} r={n.r} />)}
+        </g>
+      </svg>
+    ))
+  }
+
   <div class="wrap hero__inner">
     <p class="eyebrow hero__eyebrow" data-reveal>{t.role}</p>
-    <h1 class="hero__title" data-reveal style="--reveal-delay: 60ms">
+    <h1 class="hero__title">
       {t.hero.title}
     </h1>
     <p class="hero__sub" data-reveal style="--reveal-delay: 120ms">
@@ -18,47 +61,198 @@ const t = useTranslations(lang);
     </p>
 
     <div class="hero__ctas" data-reveal style="--reveal-delay: 180ms">
-      <Button href={localizePath('/#work', lang)} variant="solid" analytics="cta_hero_work">
-        {t.hero.ctaWork}
-      </Button>
-      <Button href={localizePath('/#contact', lang)} variant="outline" analytics="cta_hero_contact">
+      <Button href={localizePath('/#contact', lang)} variant="solid" analytics="cta_hero_contact">
         {t.hero.ctaContact}
       </Button>
-      <Button href={site.resumePath} variant="link" external download analytics="resume_download">
+      <Button href={localizePath('/#work', lang)} variant="outline" analytics="cta_hero_work">
+        {t.hero.ctaWork}
+      </Button>
+      <Button href={resumeFor(lang)} variant="link" external download analytics="resume_download">
         {t.hero.resume}
       </Button>
     </div>
 
-    <p class="hero__availability">{t.hero.availability}</p>
+    <p class="hero__availability" data-reveal style="--reveal-delay: 220ms">{t.hero.availability}</p>
     <p class="hero__location">{t.hero.location}</p>
   </div>
+
+  <!-- plane 4 (foreground): mono tags -->
+  <ul class="hero__tags" aria-label={t.sys.hero.tagsLabel} style="--k: 1.6">
+    {t.sys.hero.tags.map((tag) => <li>{tag}</li>)}
+  </ul>
 </section>
 
 <style>
   .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
     border-bottom: 1px solid var(--color-hairline);
-    padding-block: clamp(44px, 8vw, 92px) clamp(32px, 6vw, 60px);
+    padding-block: clamp(44px, 8vw, 96px) clamp(40px, 6vw, 72px);
+    min-height: min(86vh, 780px);
+    display: flex;
+    align-items: center;
+  }
+  /* soft scrim: the mesh recedes behind the headline instead of cutting through it */
+  .hero__inner::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -48px -12% -48px -34%;
+    background: radial-gradient(closest-side at 40% 50%, var(--color-ground) 52%, transparent 100%);
+    opacity: 0.92;
+    pointer-events: none;
   }
   .hero__inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
+
+  /* ---- planes: independent, contained parallax (max ~24px) ---- */
+  .hero__plane {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--px, 0) * var(--k, 1) * -10px),
+      calc((var(--py, 0) * 4px + var(--sy, 0) * -14px) * var(--k, 1)),
+      0
+    );
+  }
+  .mesh__layer {
+    transform-box: view-box;
+  }
+  .hero__grid {
+    z-index: 0;
+    background-image:
+      linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 90% at 70% 40%, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 90% at 70% 40%, #000 20%, transparent 75%);
+    inset: -30px;
+    width: calc(100% + 60px);
+    height: calc(100% + 60px);
+  }
+  .hero__mesh {
+    z-index: 1;
+    overflow: visible;
+  }
+  /* keep the headline zone calm: the mesh fades out toward the text */
+  .hero__mesh--wide {
+    inset: 0 0 0 auto;
+    width: 66%;
+    mask-image: linear-gradient(to right, transparent 2%, #000 38%);
+    -webkit-mask-image: linear-gradient(to right, transparent 2%, #000 38%);
+    opacity: 0.85;
+  }
+  .hero__mesh--tall {
+    display: none;
+  }
+  .mesh__edge {
+    fill: none;
+    stroke: var(--color-mesh);
+    stroke-width: 1;
+    opacity: 0.3;
+  }
+  .mesh__edge--near {
+    opacity: 0.55;
+  }
+  .mesh__node {
+    fill: var(--color-mesh);
+    opacity: 0.4;
+  }
+  .mesh__node--near {
+    fill: var(--color-ground);
+    stroke: var(--color-mesh);
+    stroke-width: 1.2;
+    opacity: 1;
+  }
+  .mesh__pulse {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-dasharray: 9 91;
+    stroke-dashoffset: 100;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .mesh__pulse {
+      animation: hero-pulse 4.6s linear infinite;
+      animation-delay: var(--d, 0s);
+    }
+    @keyframes hero-pulse {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    /* static equivalent: one fixed segment per pulse path, no travel */
+    .mesh__pulse {
+      stroke-dashoffset: 55;
+    }
+    .hero__plane {
+      transform: none !important;
+    }
+  }
+
+  /* ---- foreground tags ---- */
+  .hero__tags {
+    position: absolute;
+    z-index: 3;
+    right: var(--pad);
+    bottom: clamp(24px, 4vw, 48px);
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    transform: translate3d(
+      calc(var(--px, 0) * var(--k, 1) * -10px),
+      calc((var(--py, 0) * 4px + var(--sy, 0) * -14px) * var(--k, 1)),
+      0
+    );
+  }
+  .hero__tags li {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    background: color-mix(in srgb, var(--color-ground) 86%, transparent);
+    border: 1px solid var(--color-hairline);
+    border-left: 2px solid var(--color-accent);
+    padding: 5px 10px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  /* ---- type ---- */
   .hero__eyebrow {
     color: var(--color-accent);
     letter-spacing: 0.18em;
   }
   .hero__title {
-    font-size: var(--step-4);
+    font-size: var(--step-5);
     font-weight: 800;
-    letter-spacing: -0.02em;
-    max-width: 20ch;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    max-width: 15ch;
     margin-block: var(--space-4) var(--space-5);
   }
   .hero__sub {
     font-size: clamp(1rem, 0.95rem + 0.6vw, 1.18rem);
     color: var(--color-ink-soft);
-    max-width: 56ch;
+    max-width: 54ch;
   }
   .hero__ctas {
     display: flex;
@@ -69,7 +263,7 @@ const t = useTranslations(lang);
   }
   .hero__availability {
     margin-top: var(--space-6);
-    max-width: 62ch;
+    max-width: 54ch;
     color: var(--color-ink-soft);
     font-size: var(--step--1);
   }
@@ -81,15 +275,76 @@ const t = useTranslations(lang);
     letter-spacing: 0.02em;
   }
 
-  @media (max-width: 480px) {
-    .hero__ctas > :global(.btn:not(.btn--link)) {
-      flex: 1 1 100%;
+  :global(.js) .hero [data-reveal] {
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  /* ---- tablet: tags move out of the mesh into a row ---- */
+  @media (max-width: 1100px) {
+    .hero__tags {
+      position: relative;
+      inset: auto;
+      z-index: 2;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      padding-inline: var(--pad);
+      margin-top: var(--space-6);
+      max-width: var(--shell);
+      margin-inline: auto;
+      width: 100%;
+      transform: none;
+    }
+    .hero {
+      flex-direction: column;
+      align-items: stretch;
       justify-content: center;
     }
   }
 
-  /* stagger the hero reveal (see base.css .js [data-reveal]) */
-  :global(.js) .hero [data-reveal] {
-    transition-delay: var(--reveal-delay, 0ms);
+  /* ---- phone: SEPARATE composition (portrait mesh in flow, no pointer parallax) ---- */
+  @media (max-width: 700px) {
+    .hero {
+      min-height: 0;
+      padding-block: 36px 40px;
+      align-items: stretch;
+    }
+    .hero__mesh--wide {
+      display: none;
+    }
+    .hero__inner::before {
+      display: none;
+    }
+    .hero__mesh--tall {
+      display: block;
+      position: relative;
+      inset: auto;
+      order: 3;
+      height: 230px;
+      margin-top: var(--space-6);
+      width: calc(100% - 2 * var(--pad));
+      margin-inline: auto;
+      border: 1px solid var(--color-hairline-soft);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--color-surface);
+    }
+    .hero__grid {
+      display: none;
+    }
+    .hero__inner {
+      order: 1;
+    }
+    .hero__tags {
+      order: 4;
+      margin-top: var(--space-4);
+    }
+    .hero__title {
+      max-width: 12ch;
+    }
+    .hero__ctas > :global(.btn:not(.btn--link)) {
+      flex: 1 1 100%;
+      justify-content: center;
+    }
   }
 </style>

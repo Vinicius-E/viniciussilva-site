@@ -25,6 +25,8 @@
   --color-ok: #2f6b49;
   --color-warn: #8a5e14;
   --color-warn-surface: #f3ebda;
+  --color-grid: rgba(23, 21, 26, 0.07);
+  --color-mesh: rgba(23, 21, 26, 0.34);
 
   --shadow-card: 0 1px 2px rgba(23, 21, 26, 0.04), 0 8px 30px -12px rgba(23, 21, 26, 0.14);
   --shadow-raised: 0 2px 6px rgba(23, 21, 26, 0.06), 0 18px 50px -18px rgba(23, 21, 26, 0.22);
@@ -40,6 +42,7 @@
   --step-2: clamp(1.5rem, 1.3rem + 1vw, 1.95rem);
   --step-3: clamp(1.7rem, 1.4rem + 1.6vw, 2.4rem);
   --step-4: clamp(1.9rem, 1.4rem + 2.6vw, 3rem);
+  --step-5: clamp(2.35rem, 1.3rem + 5.2vw, 5rem);
 
   --leading-tight: 1.14;
   --leading-snug: 1.3;
@@ -88,20 +91,22 @@
 /* ---- colour: DARK (system), guarded so [data-theme="light"] still wins ---- */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --color-ground: #0e0d10;
-    --color-surface: #151419;
-    --color-raised: #1c1b21;
-    --color-ink: #ece9e3;
-    --color-ink-soft: #aba69d;
-    --color-steel: #948d7f;
-    --color-hairline: #2a2830;
-    --color-hairline-soft: #221f27;
+    --color-ground: #0f0d0b;
+    --color-surface: #171410;
+    --color-raised: #1f1b16;
+    --color-ink: #efe9df;
+    --color-ink-soft: #b3aa9c;
+    --color-steel: #9d9485;
+    --color-hairline: #2d2821;
+    --color-hairline-soft: #231f19;
     --color-accent: #e4562a;
     --color-accent-strong: #ff7c42;
     --color-on-accent: #140f0c;
     --color-ok: #58b183;
     --color-warn: #d6a44c;
-    --color-warn-surface: #241f16;
+    --color-warn-surface: #241e14;
+    --color-grid: rgba(239, 233, 223, 0.06);
+    --color-mesh: rgba(239, 233, 223, 0.30);
 
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 40px -14px rgba(0, 0, 0, 0.6);
     --shadow-raised: 0 2px 8px rgba(0, 0, 0, 0.5), 0 24px 60px -18px rgba(0, 0, 0, 0.7);
@@ -112,20 +117,22 @@
 
 /* ---- colour: DARK (explicit toggle) ---- */
 :root[data-theme='dark'] {
-  --color-ground: #0e0d10;
-  --color-surface: #151419;
-  --color-raised: #1c1b21;
-  --color-ink: #ece9e3;
-  --color-ink-soft: #aba69d;
-  --color-steel: #948d7f;
-  --color-hairline: #2a2830;
-  --color-hairline-soft: #221f27;
+  --color-ground: #0f0d0b;
+  --color-surface: #171410;
+  --color-raised: #1f1b16;
+  --color-ink: #efe9df;
+  --color-ink-soft: #b3aa9c;
+  --color-steel: #9d9485;
+  --color-hairline: #2d2821;
+  --color-hairline-soft: #231f19;
   --color-accent: #e4562a;
   --color-accent-strong: #ff7c42;
   --color-on-accent: #140f0c;
   --color-ok: #58b183;
   --color-warn: #d6a44c;
-  --color-warn-surface: #241f16;
+  --color-warn-surface: #241e14;
+  --color-grid: rgba(239, 233, 223, 0.06);
+  --color-mesh: rgba(239, 233, 223, 0.30);
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 40px -14px rgba(0, 0, 0, 0.6);
   --shadow-raised: 0 2px 8px rgba(0, 0, 0, 0.5), 0 24px 60px -18px rgba(0, 0, 0, 0.7);
@@ -149,6 +156,8 @@
   --color-ok: #2f6b49;
   --color-warn: #8a5e14;
   --color-warn-surface: #f3ebda;
+  --color-grid: rgba(23, 21, 26, 0.07);
+  --color-mesh: rgba(23, 21, 26, 0.34);
 
   --shadow-card: 0 1px 2px rgba(23, 21, 26, 0.04), 0 8px 30px -12px rgba(23, 21, 26, 0.14);
   --shadow-raised: 0 2px 6px rgba(23, 21, 26, 0.06), 0 18px 50px -18px rgba(23, 21, 26, 0.22);

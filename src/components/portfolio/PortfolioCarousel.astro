@@ -8,17 +8,12 @@ const total = portfolio.length;
 const cats = Object.entries(portfolioCategories);
 const catName = (c: keyof typeof portfolioCategories) => portfolioCategories[c][lang];
 const demoHref = (href: string) => href + (href.includes('?') ? '&' : '?') + `lang=${lang}`;
+// Produtos com página de apresentação própria por idioma (hrefs); demos soltas (Torre de Controle) seguem recebendo ?lang=
+const itemHref = (p: { href: string; hrefs?: Record<string, string> }) => (p.hrefs ? p.hrefs[lang] : demoHref(p.href));
 ---
 
-<section class="pf" data-pf aria-labelledby="pf-title">
+<section class="pf" id="systems" data-pf data-signal={ui.carousel}>
   <div class="wrap">
-    <header class="pf__head">
-      <p class="mono-label">{ui.label}</p>
-      <h1 id="pf-title" class="pf__title">{ui.title}</h1>
-      <p class="pf__intro">{ui.intro}</p>
-      <p class="pf__note">{ui.note}</p>
-    </header>
-
     <div class="pf__filters" role="group" aria-label={ui.filterBy} data-filters>
       <button type="button" class="chip" data-cat="all" aria-pressed="true">{ui.all} <span>{total}</span></button>
       {
@@ -45,7 +40,7 @@ const demoHref = (href: string) => href + (href.includes('?') ? '&' : '?') + `la
                 aria-label={`${p.name}, ${ui.project} ${i + 1} ${ui.of} ${total}`}
                 style={`--a:${p.accent}`}
               >
-                <a class="slide__shot" href={demoHref(p.href)} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                <a class="slide__shot" href={itemHref(p)} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
                   <img
                     src={`/portfolio/${p.slug}.webp`}
                     width="1200"
@@ -78,7 +73,7 @@ const demoHref = (href: string) => href + (href.includes('?') ? '&' : '?') + `la
                     {portfolioStack.map((s) => <li>{s}</li>)}
                   </ul>
                   <p class="slide__cta">
-                    <a class="btn-demo" href={demoHref(p.href)} target="_blank" rel="noopener">
+                    <a class="btn-demo" href={itemHref(p)} target="_blank" rel="noopener">
                       {ui.open} <span aria-hidden="true">↗</span>
                       <span class="sr-only">— {p.name} ({ui.opens})</span>
                     </a>
@@ -126,6 +121,7 @@ const demoHref = (href: string) => href + (href.includes('?') ? '&' : '?') + `la
     const chips = [...root.querySelectorAll<HTMLButtonElement>('[data-cat].chip')];
     let cat = 'all';
     let idx = 0;
+    let touched = false;
     const visible = () => slides.filter((s) => cat === 'all' || s.dataset.cat === cat);
 
     function render(focusSlide = false) {
@@ -149,12 +145,24 @@ const demoHref = (href: string) => href + (href.includes('?') ? '&' : '?') + `la
         const is = b.dataset.slug === cur.id;
         if (is) b.setAttribute('aria-current', 'true');
         else b.removeAttribute('aria-current');
-        if (is) b.scrollIntoView({ block: 'nearest', inline: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        if (is) {
+          const sc = b.closest<HTMLElement>('[data-rail]')!;
+          const left = b.offsetLeft - sc.clientWidth / 2 + b.clientWidth / 2;
+          sc.scrollTo({ left, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        }
       }
-      history.replaceState(null, '', '#' + cur.id);
+      // Writing the hash makes Chromium scroll to the slide anchor (the page used to land ~1000px down).
+      // Only write it after the visitor interacts, and keep the scroll position.
+      if (touched) {
+        const y = window.scrollY;
+        history.replaceState(null, '', '#' + cur.id);
+        if (window.scrollY !== y) window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
+      }
+      syncSky();
       if (focusSlide) cur.querySelector<HTMLElement>('.btn-demo')?.focus({ preventScroll: true });
     }
     const step = (d: number) => {
+      touched = true;
       idx += d;
       render();
     };
@@ -170,12 +178,14 @@ const demoHref = (href: string) => href + (href.includes('?') ? '&' : '?') + `la
     });
     root.querySelectorAll<HTMLButtonElement>('[data-rail] button').forEach((b) =>
       b.addEventListener('click', () => {
+        touched = true;
         idx = visible().findIndex((s) => s.id === b.dataset.slug);
         render();
       }),
     );
     for (const c of chips) {
       c.addEventListener('click', () => {
+        touched = true;
         cat = c.dataset.cat!;
         idx = 0;
         for (const o of chips) o.setAttribute('aria-pressed', String(o === c));
@@ -191,6 +201,24 @@ const demoHref = (href: string) => href + (href.includes('?') ? '&' : '?') + `la
       x0 = null;
       if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
     });
+    // constellation in the page hero: category dims it, the current slide lights its star, a click jumps to a slide
+    const sky = document.querySelector<HTMLElement>('[data-pfhero]');
+    const syncSky = () => {
+      if (!sky) return;
+      sky.dataset.cat = cat;
+      const cur = visible()[idx];
+      sky.querySelectorAll('.sky__star').forEach((n) => n.classList.toggle('is-current', n.getAttribute('data-slug') === cur?.id));
+    };
+    sky?.querySelectorAll<SVGElement>('.sky__star').forEach((n) =>
+      n.addEventListener('click', () => {
+        touched = true;
+        cat = 'all';
+        for (const o of chips) o.setAttribute('aria-pressed', String(o.dataset.cat === 'all'));
+        idx = visible().findIndex((s) => s.id === n.getAttribute('data-slug'));
+        render();
+        region.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      }),
+    );
     const hash = decodeURIComponent(location.hash.slice(1));
     const start = visible().findIndex((s) => s.id === hash);
     if (start >= 0) idx = start;

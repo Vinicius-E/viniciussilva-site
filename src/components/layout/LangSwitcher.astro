@@ -15,7 +15,7 @@ const hasLocalized = base === '/';
       <a
         href={hasLocalized ? localizePath(base, l) : localizePath('/', l)}
         class:list={['lang__opt', { 'is-current': l === lang }]}
-        hreflang={{ en: 'en', pt: 'pt-BR', es: 'es' }[l]}
+        hreflang={{ en: 'en-US', pt: 'pt-BR', es: 'es-ES' }[l]}
         aria-current={l === lang ? 'true' : undefined}
         data-lang={l}
       >

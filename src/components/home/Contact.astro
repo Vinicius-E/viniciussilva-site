@@ -2,7 +2,7 @@
 import SectionShell from '../layout/SectionShell.astro';
 import Button from '../ui/Button.astro';
 import CopyText from '../ui/CopyText.astro';
-import { site, mailtoHref } from '../../lib/site';
+import { site, resumeFor, mailtoHref } from '../../lib/site';
 import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
@@ -12,6 +12,7 @@ const t = useTranslations(lang);
 <SectionShell id="contact" label={t.nav.contact} heading={t.contact.heading}>
   <div class="contact">
     <p class="contact__sub">{t.hero.availability}</p>
+    <p class="contact__reply">{t.sys.contactReply}</p>
 
     <div class="contact__actions">
       <Button href={mailtoHref} variant="solid" analytics="contact_email">{t.contact.emailMe}</Button>
@@ -21,8 +22,8 @@ const t = useTranslations(lang);
       <Button href={site.socials.github} variant="outline" external analytics="out_github">
         {t.contact.github}
       </Button>
-      <Button href={site.resumePath} variant="link" external download analytics="resume_download">
-        {t.contact.resume}
+      <Button href={resumeFor(lang)} variant="link" external download analytics="resume_download">
+        {t.header.resume} <span class="contact__lang">{t.sys.resumeLang}</span>
       </Button>
     </div>
 
@@ -44,6 +45,18 @@ const t = useTranslations(lang);
     font-size: clamp(1rem, 0.95rem + 0.4vw, 1.1rem);
     color: var(--color-ink-soft);
     max-width: 52ch;
+  }
+  .contact__reply {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--color-ink);
+  }
+  .contact__lang {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-steel);
   }
   .contact__actions {
     display: flex;

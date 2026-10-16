@@ -17,7 +17,11 @@ interface Props {
 const { id, label, heading, headingHidden = false, intro, tight = false, class: klass } = Astro.props;
 ---
 
-<section id={id} class={`section${tight ? ' section--tight' : ''}${klass ? ` ${klass}` : ''}`}>
+<section
+  id={id}
+  class={`section${tight ? ' section--tight' : ''}${klass ? ` ${klass}` : ''}`}
+  data-signal={label}
+>
   <div class="wrap">
     <div class="section__head" data-reveal>
       <p class="mono-label">{label}</p>
@@ -39,15 +43,50 @@ const { id, label, heading, headingHidden = false, intro, tight = false, class: 
     padding-block: var(--section-y-tight);
   }
   .section__head {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
     margin-bottom: var(--space-6);
+    padding-top: var(--space-5);
+  }
+  /* scan line: a terracotta hairline sweeps across the section top when it enters */
+  .section__head::before,
+  .section__head::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 1px;
+    width: 100%;
+    background: var(--color-hairline);
+  }
+  .section__head::after {
+    background: var(--color-accent);
+    width: 100%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .section__head::after {
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 900ms var(--ease) 120ms;
+    }
+    :global(.js) .section__head.is-visible::after {
+      transform: scaleX(0.18);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .section__head::after {
+      transform: scaleX(0.18);
+      transform-origin: left center;
+    }
   }
   .section__heading {
-    font-size: var(--step-2);
-    font-weight: 700;
-    max-width: 22ch;
+    font-size: var(--step-3);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.04;
+    max-width: 20ch;
   }
   .section__intro {
     color: var(--color-ink-soft);

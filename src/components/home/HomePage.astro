@@ -5,6 +5,7 @@ import SelectedWork from './SelectedWork.astro';
 import EngineeringSnapshot from './EngineeringSnapshot.astro';
 import Experience from './Experience.astro';
 import Expertise from './Expertise.astro';
+import Proof from './Proof.astro';
 import HowIWork from './HowIWork.astro';
 import About from './About.astro';
 import ClosingCta from './ClosingCta.astro';
@@ -25,10 +26,11 @@ const title = `${site.name} — ${t.role} · ${t.meta.titleSuffix}`;
   jsonLd={[personLd(lang), webSiteLd(lang)]}
 >
   <Hero />
-  <SelectedWork />
   <EngineeringSnapshot />
+  <SelectedWork />
   <Experience />
   <Expertise />
+  <Proof />
   <HowIWork />
   <About />
   <ClosingCta />

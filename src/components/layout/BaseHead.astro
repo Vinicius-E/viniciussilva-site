@@ -22,7 +22,7 @@ const {
   title,
   description = t.meta.description,
   path,
-  ogImage = '/og/home.png',
+  ogImage = `/og/home-${lang}.png`,
   ogType = 'website',
   jsonLd = [],
 } = Astro.props;
@@ -33,7 +33,7 @@ const ogImageUrl = new URL(ogImage, site.url).href;
 const basePath = stripLangPrefix(path);
 const ogLocale = { en: 'en_US', pt: 'pt_BR', es: 'es_ES' }[lang];
 const alternates = locales.map((l) => ({
-  hreflang: { en: 'en', pt: 'pt-BR', es: 'es' }[l],
+  hreflang: { en: 'en-US', pt: 'pt-BR', es: 'es-ES' }[l],
   href: new URL(localizePath(basePath, l), site.url).href,
 }));
 const siteName = `${site.name} — ${t.role}`;
@@ -46,7 +46,7 @@ const siteName = `${site.name} — ${t.role}`;
 <link rel="canonical" href={canonical} />
 <meta name="author" content={site.legalName} />
 <meta name="robots" content="index, follow" />
-<meta name="theme-color" content="#0e0d10" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#0f0d0b" media="(prefers-color-scheme: dark)" />
 <meta name="theme-color" content="#f1ede6" media="(prefers-color-scheme: light)" />
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build && node scripts/csp.mjs",
-    "build:fast": "astro build && node scripts/csp.mjs",
+    "build": "node scripts/resume-check.mjs && astro check && astro build && node scripts/csp.mjs",
+    "build:fast": "node scripts/resume-check.mjs && astro build && node scripts/csp.mjs",
     "security": "node scripts/security-probe.mjs",
     "preview": "astro preview --host 127.0.0.1 --port 4321",
     "check": "astro check",

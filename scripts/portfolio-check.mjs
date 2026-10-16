@@ -6,7 +6,8 @@ import { readdirSync, mkdirSync, existsSync } from 'node:fs';
 
 const BASE = process.argv[2] || 'http://127.0.0.1:4321';
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const slugs = readdirSync('public/demos', { withFileTypes: true }).filter((d) => d.isDirectory() && existsSync('public/demos/' + d.name + '/kit-data.js')).map((d) => d.name);
+// módulos das suítes: public/demos/<suite>/<modulo>/ (cada um com o seu kit-data.js)
+const slugs = readdirSync('public/demos', { withFileTypes: true }).filter((d) => d.isDirectory()).flatMap((s) => readdirSync('public/demos/' + s.name, { withFileTypes: true }).filter((m) => m.isDirectory() && existsSync(`public/demos/${s.name}/${m.name}/kit-data.js`)).map((m) => `${s.name}/${m.name}`));
 mkdirSync('.review', { recursive: true });
 const browser = await chromium.launch({ executablePath: CHROME, headless: true });
 const bad = [];
@@ -71,10 +72,10 @@ for (const [tag, w, h] of [['desktop', 1440, 1000], ['tablet', 820, 1000], ['mob
     await page.locator('[data-region]').focus();
     await page.keyboard.press('ArrowRight');
     if ((await count()) !== `3 / ${N}`) { console.log('FALHA teclado', await count()); pf++; }
-    await page.locator('[data-rail] button[data-slug="vaga-match"]').click();
-    if (!(await page.locator('#vaga-match').evaluate((e) => !e.hasAttribute('inert')))) { console.log('FALHA rail'); pf++; }
+    await page.locator('[data-rail] button[data-slug="ti-sob-controle"]').click();
+    if (!(await page.locator('#ti-sob-controle').evaluate((e) => !e.hasAttribute('inert')))) { console.log('FALHA rail'); pf++; }
     await page.locator('.chip[data-cat="career"]').click();
-    if ((await count()) !== '1 / 3') { console.log('FALHA filtro', await count()); pf++; }
+    if ((await count()) !== '1 / 1') { console.log('FALHA filtro', await count()); pf++; }
     await page.locator('.chip[data-cat="all"]').click();
     const ov = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     if (ov) { console.log('FALHA overflow horizontal', tag); pf++; }

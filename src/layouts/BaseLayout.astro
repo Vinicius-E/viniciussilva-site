@@ -33,12 +33,21 @@ const t = useTranslations(lang);
   <body>
     <a href="#main" class="skip-link">{t.a11y.skip}</a>
     <span id="top"></span>
+    <div class="ambient" aria-hidden="true"><i class="ambient__grid"></i><i class="ambient__glow"></i></div>
+    <div class="signal" data-rail data-prefix={t.sys.signal} aria-hidden="true">
+      <span class="signal__line"><span class="signal__fill"></span></span>
+      <span class="signal__pulse"></span>
+      <span class="signal__readout"></span>
+    </div>
     <Header />
     <main id="main">
       <slot />
     </main>
     <Footer />
 
+    <script>
+      import '../scripts/signal';
+    </script>
     <script>
       // one-time reveal on scroll; disabled under reduced-motion via CSS
       const items = document.querySelectorAll('[data-reveal]');

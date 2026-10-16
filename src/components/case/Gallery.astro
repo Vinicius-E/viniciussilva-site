@@ -4,7 +4,7 @@
  * otherwise a labelled placeholder tile. No fabricated screenshots.
  *
  * TODO[asset]: when cleared screenshots exist, drop them in
- * src/assets/cases/wester/ and pass { src, alt, caption }. A native <dialog>
+ * src/assets/cases/industrial/ and pass { src, alt, caption }. A native <dialog>
  * lightbox (the one sanctioned interactive island, spec §D) can be added then.
  */
 interface Shot {
@@ -15,7 +15,7 @@ interface Shot {
 interface Props {
   items: Shot[];
 }
-const { items } = Astro.props;
+const items = Astro.props.items.filter((s) => s.src);
 ---
 
 <div class="gallery">

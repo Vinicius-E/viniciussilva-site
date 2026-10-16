@@ -1,0 +1,309 @@
+---
+/**
+ * Portfolio hero: a constellation where every dot is one system, clustered by
+ * category. Layered like the home hero (grid / constellation / headline / tags),
+ * separate portrait composition for phones. Decorative; the real navigation is
+ * the filter chips and carousel below. Dots are clickable as a pointer shortcut.
+ */
+import { portfolio, portfolioCategories, portfolioUi } from '../../lib/portfolio-data';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const ui = portfolioUi[lang];
+const t = useTranslations(lang);
+const cats = Object.keys(portfolioCategories) as (keyof typeof portfolioCategories)[];
+
+interface Layout { key: 'wide' | 'tall'; w: number; h: number; centers: [number, number][] }
+const layouts: Layout[] = [
+  { key: 'wide', w: 560, h: 720, centers: [[150, 140], [410, 140], [150, 360], [410, 360], [150, 580], [410, 580]] },
+  { key: 'tall', w: 420, h: 560, centers: [[110, 100], [310, 100], [110, 290], [310, 290], [110, 470], [310, 470]] },
+];
+
+function build(l: Layout) {
+  const hubs = cats.map((c, i) => ({ c, x: l.centers[i][0], y: l.centers[i][1] }));
+  const stars: { x: number; y: number; slug: string; cat: string; a: string; hx: number; hy: number }[] = [];
+  hubs.forEach((h) => {
+    const items = portfolio.filter((p) => p.category === h.c);
+    items.forEach((p, j) => {
+      const ang = (j / items.length) * Math.PI * 2 - Math.PI / 2 + (h.x % 7) * 0.2;
+      const r = 40 + (j % 2) * 18;
+      stars.push({ x: Math.round(h.x + Math.cos(ang) * r), y: Math.round(h.y + Math.sin(ang) * r), slug: p.slug, cat: h.c, a: p.accent, hx: h.x, hy: h.y });
+    });
+  });
+  const hubEdges = hubs.map((h, i) => {
+    const n = hubs[(i + 1) % hubs.length];
+    return `M${h.x} ${h.y}L${n.x} ${n.y}`;
+  });
+  return { hubs, stars, hubEdges };
+}
+const built = layouts.map((l) => ({ l, ...build(l) }));
+---
+
+<section class="pfhero" data-hero data-pfhero data-signal={ui.label} aria-labelledby="pf-title">
+  <div class="pfhero__plane pfhero__grid" aria-hidden="true" style="--k: 0.25"></div>
+
+  {
+    built.map(({ l, hubs, stars, hubEdges }) => (
+      <svg
+        class={`pfhero__plane pfhero__sky pfhero__sky--${l.key}`}
+        viewBox={`0 0 ${l.w} ${l.h}`}
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+        focusable="false"
+        style="--k: 0.8"
+      >
+        <g class="sky__links">
+          {stars.map((s) => <path class="sky__edge" d={`M${s.hx} ${s.hy}L${s.x} ${s.y}`} data-cat={s.cat} />)}
+          {hubEdges.map((d) => <path class="sky__hub-edge" d={d} />)}
+          {hubEdges.map((d, i) => (
+            <path class="sky__pulse" d={d} pathLength="100" style={`--d:${(i * 0.8).toFixed(1)}s`} />
+          ))}
+        </g>
+        <g>
+          {hubs.map((h) => (
+            <g class="sky__hub" data-cat={h.c}>
+              <circle cx={h.x} cy={h.y} r="9" />
+              <text x={h.x} y={h.y + (l.key === 'wide' ? 96 : 84)} text-anchor="middle">
+                {portfolioCategories[h.c][lang]}
+              </text>
+            </g>
+          ))}
+          {stars.map((s) => (
+            <circle class="sky__star" cx={s.x} cy={s.y} r="5.5" data-slug={s.slug} data-cat={s.cat} style={`--a:${s.a}`} />
+          ))}
+        </g>
+      </svg>
+    ))
+  }
+
+  <div class="wrap pfhero__inner">
+    <p class="mono-label" data-reveal>{ui.label}</p>
+    <h1 id="pf-title" class="pfhero__title">{ui.title}</h1>
+    <p class="pfhero__intro">{ui.intro}</p>
+    <p class="pfhero__note">{ui.note}</p>
+    <p class="pfhero__hint" aria-hidden="true">{t.sys.pf.hint}</p>
+  </div>
+</section>
+
+<style>
+  .pfhero {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    border-bottom: 1px solid var(--color-hairline);
+    padding-block: clamp(44px, 7vw, 88px) clamp(40px, 6vw, 72px);
+    min-height: min(82vh, 720px);
+    display: flex;
+    align-items: center;
+  }
+  .pfhero__plane {
+    position: absolute;
+    pointer-events: none;
+    will-change: transform;
+    transform: translate3d(
+      calc(var(--px, 0) * var(--k, 1) * -10px),
+      calc((var(--py, 0) * 4px + var(--sy, 0) * -14px) * var(--k, 1)),
+      0
+    );
+  }
+  .pfhero__grid {
+    inset: -30px;
+    z-index: 0;
+    background-image:
+      linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 90% at 70% 40%, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 90% at 70% 40%, #000 20%, transparent 75%);
+  }
+  .pfhero__sky {
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 46%;
+    height: 100%;
+    overflow: visible;
+    mask-image: linear-gradient(to right, transparent 0%, #000 22%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 22%);
+  }
+  .pfhero__sky--tall {
+    display: none;
+  }
+  .sky__edge {
+    fill: none;
+    stroke: var(--color-mesh);
+    stroke-width: 1;
+    opacity: 0.5;
+    transition: opacity var(--dur) var(--ease);
+  }
+  .sky__hub-edge {
+    fill: none;
+    stroke: var(--color-mesh);
+    stroke-width: 1;
+    stroke-dasharray: 3 5;
+    opacity: 0.55;
+  }
+  .sky__pulse {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-dasharray: 8 92;
+    stroke-dashoffset: 100;
+  }
+  .sky__hub circle {
+    fill: var(--color-ground);
+    stroke: var(--color-ink-soft);
+    stroke-width: 1.5;
+    transition: opacity var(--dur) var(--ease);
+  }
+  .sky__hub text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    fill: var(--color-ink-soft);
+    transition: opacity var(--dur) var(--ease);
+  }
+  .sky__star {
+    fill: var(--a);
+    stroke: var(--color-ground);
+    stroke-width: 1.5;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: opacity var(--dur) var(--ease), r var(--dur) var(--ease);
+  }
+  .sky__star:hover,
+  .sky__star.is-current {
+    r: 8;
+  }
+  /* category filter dims everything else, then restores the chosen category */
+  .pfhero[data-cat]:not([data-cat='all']) :is(.sky__star, .sky__edge, .sky__hub) {
+    opacity: 0.2;
+  }
+  .pfhero[data-cat='platform'] [data-cat='platform'],
+  .pfhero[data-cat='logistics'] [data-cat='logistics'],
+  .pfhero[data-cat='engineering'] [data-cat='engineering'],
+  .pfhero[data-cat='career'] [data-cat='career'],
+  .pfhero[data-cat='local'] [data-cat='local'],
+  .pfhero[data-cat='impact'] [data-cat='impact'] {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sky__pulse {
+      animation: sky-pulse 4.8s linear infinite;
+      animation-delay: var(--d, 0s);
+    }
+    @keyframes sky-pulse {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sky__pulse {
+      stroke-dashoffset: 55;
+    }
+    .pfhero__plane {
+      transform: none !important;
+    }
+  }
+
+  .pfhero__inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+  }
+  /* soft scrim: dims the constellation where the text sits */
+  .pfhero__inner::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -40px -8% -40px -30%;
+    background: radial-gradient(closest-side at 38% 50%, var(--color-ground) 55%, transparent 100%);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  .pfhero__title {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    max-width: 13ch;
+    margin: var(--space-3) 0 var(--space-5);
+  }
+  .pfhero__intro {
+    color: var(--color-ink-soft);
+    max-width: 54ch;
+    font-size: var(--step--1);
+  }
+
+  .pfhero__note {
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: var(--color-steel);
+    max-width: 62ch;
+  }
+  .pfhero__hint {
+    margin-top: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  :global(.js) .pfhero [data-reveal] {
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  @media (max-width: 1100px) {
+    .pfhero__sky {
+      width: 52%;
+      opacity: 0.85;
+    }
+  }
+  /* phone: separate portrait composition, constellation in flow below the text */
+  @media (max-width: 700px) {
+    .pfhero {
+      flex-direction: column;
+      align-items: stretch;
+      min-height: 0;
+      padding-block: 36px 32px;
+    }
+    .pfhero__grid,
+    .pfhero__sky--wide {
+      display: none;
+    }
+    .pfhero__sky--tall {
+      display: block;
+      position: relative;
+      order: 3;
+      width: calc(100% - 2 * var(--pad));
+      height: auto;
+      aspect-ratio: 420 / 560;
+      max-height: 56svh;
+      margin: var(--space-6) auto 0;
+      mask-image: none;
+      -webkit-mask-image: none;
+      transform: none;
+      border: 1px solid var(--color-hairline-soft);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      padding: 6px;
+    }
+    .pfhero__inner {
+      order: 1;
+    }
+    .pfhero__inner::before {
+      display: none;
+    }
+    .pfhero__title {
+      max-width: 11ch;
+    }
+  }
+</style>

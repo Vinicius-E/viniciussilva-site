@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PortfolioHero from './PortfolioHero.astro';
 import PortfolioCarousel from './PortfolioCarousel.astro';
+import PortfolioCatalog from './PortfolioCatalog.astro';
 import { site } from '../../lib/site';
 import { portfolioUi } from '../../lib/portfolio-data';
 import { getLangFromUrl, localizePath } from '../../i18n/utils';
@@ -10,5 +12,7 @@ const ui = portfolioUi[lang];
 ---
 
 <BaseLayout title={`${ui.seoTitle} · ${site.name}`} description={ui.intro.slice(0, 200)} path={localizePath('/portfolio', lang)}>
+  <PortfolioHero />
   <PortfolioCarousel />
+  <PortfolioCatalog />
 </BaseLayout>

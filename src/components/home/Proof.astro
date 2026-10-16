@@ -1,0 +1,67 @@
+---
+import SectionShell from '../layout/SectionShell.astro';
+import Button from '../ui/Button.astro';
+import { site } from '../../lib/site';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const quotes = t.sys.proof.quotes;
+---
+
+<SectionShell id="proof" label={t.sys.proof.label} heading={t.sys.proof.heading}>
+  {
+    quotes.length > 0 && (
+      <div class="proof">
+        {quotes.map((q) => (
+          <figure class="proof__quote" data-reveal>
+            <blockquote>{q.text}</blockquote>
+            <figcaption>{q.name} · {q.role}</figcaption>
+          </figure>
+        ))}
+      </div>
+    )
+  }
+  <p class="proof__links" data-reveal style={quotes.length ? undefined : 'margin-top: 0'}>
+    <span class="proof__label">{t.sys.proof.links}</span>
+    <Button href={site.socials.github} variant="outline" size="sm" external analytics="out_github">GitHub</Button>
+    <Button href={site.socials.linkedin} variant="outline" size="sm" external analytics="out_linkedin">LinkedIn</Button>
+  </p>
+</SectionShell>
+
+<style>
+  .proof {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .proof__quote {
+    margin: 0;
+    padding: var(--space-5);
+    border: 1px solid var(--color-hairline);
+    border-left: 2px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: 1.3;
+  }
+  .proof__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    margin-top: var(--space-6);
+  }
+  .proof__label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+  }
+  @media (min-width: 760px) {
+    .proof {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
