@@ -1,0 +1,83 @@
+---
+/**
+ * AI-assisted engineering: what is used daily, what was built (agents, MCP,
+ * retrieval, method), and one explicit line on what is NOT claimed.
+ * Copy lives in src/lib/portfolio-index.ts (aiUi), per locale.
+ */
+import SectionShell from '../layout/SectionShell.astro';
+import Button from '../ui/Button.astro';
+import { aiUi } from '../../lib/portfolio-index';
+import { getLangFromUrl, localizePath } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const ui = aiUi[lang];
+---
+
+<SectionShell id="ai" label={ui.label} heading={ui.heading} intro={ui.intro}>
+  <ol class="ai">
+    {
+      ui.items.map((it, i) => (
+        <li class="ai__item" data-reveal style={`--i:${i}`}>
+          <span class="ai__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="ai__name">{it.name}</h3>
+          <p class="ai__body">{it.body}</p>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="ai__honest" data-reveal>{ui.honest}</p>
+  <p class="ai__cta" data-reveal>
+    <Button href={`${localizePath('/portfolio', lang)}#projects`} variant="link" analytics="cta_portfolio" analyticsLabel="ai">
+      {ui.cta} →
+    </Button>
+  </p>
+</SectionShell>
+
+<style>
+  .ai {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .ai__item {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    padding: var(--space-5);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+  .ai__n {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--color-accent);
+  }
+  .ai__name {
+    font-size: var(--step-1);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .ai__body {
+    color: var(--color-ink-soft);
+    max-width: 60ch;
+  }
+  .ai__honest {
+    margin-top: var(--space-5);
+    color: var(--color-steel);
+    font-size: var(--step--1);
+    max-width: 68ch;
+  }
+  .ai__cta {
+    margin-top: var(--space-4);
+  }
+  @media (min-width: 760px) {
+    .ai {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
