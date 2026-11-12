@@ -12,10 +12,10 @@ import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const g = t.expertise.groups;
-// ui.ts order: backend, data, full-stack, cloud, practice → map order
-const layers = [g[2], g[0], g[1], g[3]];
+// ui.ts order: backend, data, full-stack, cloud, practice, ai → map order.
+// Each group carries `core`: how many leading items are core (matches the résumé's "Core" line).
+const layers = [g[0], g[5], g[1], g[2], g[3]];
 const base = g[4];
-const CORE = 3;
 ---
 
 <SectionShell
@@ -32,10 +32,10 @@ const CORE = 3;
             <h3 class="map__name">{layer.name}</h3>
             <ul class="map__items">
               {layer.items.map((it, i) => (
-                <li class={`chip${i < CORE ? ' chip--core' : ''}`}>
+                <li class={`chip${i < layer.core ? ' chip--core' : ''}`}>
                   <span class="chip__mark" aria-hidden="true" />
                   {it}
-                  {i < CORE && <span class="sr-only"> ({t.sys.map.core})</span>}
+                  {i < layer.core && <span class="sr-only"> ({t.sys.map.core})</span>}
                 </li>
               ))}
             </ul>
@@ -49,10 +49,10 @@ const CORE = 3;
       <ul class="map__items">
         {
           base.items.map((it, i) => (
-            <li class={`chip${i < CORE ? ' chip--core' : ''}`}>
+            <li class={`chip${i < base.core ? ' chip--core' : ''}`}>
               <span class="chip__mark" aria-hidden="true" />
               {it}
-              {i < CORE && <span class="sr-only"> ({t.sys.map.core})</span>}
+              {i < base.core && <span class="sr-only"> ({t.sys.map.core})</span>}
             </li>
           ))
         }

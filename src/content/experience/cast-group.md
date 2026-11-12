@@ -1,74 +1,90 @@
 ---
 company: Cast Group
-title: Full-Stack Engineer (Intern → Senior)
+title: Full-Stack Engineer (Trainee → Senior Development Analyst)
 start: Aug 2021
 end: Sep 2025
 order: 2
 context: >-
   IT consultancy delivering full-stack software for enterprise and public-sector
-  clients — Bosch (an international, English-speaking engagement), TJMG (the Minas
-  Gerais Court of Justice), Usiminas, Prodemge and Studio Z. Grew from intern to
-  senior across the engagement, including release planning as Squad Leader.
+  clients: Studio Z (e-commerce), Bosch (an international project run entirely
+  in English), TJMG (the Minas Gerais Court of Justice), Usiminas and Prodemge.
+  Grew from trainee to senior development analyst across the engagement.
 ownership: >-
-  Built React and Angular front ends over Java / Spring Boot / Quarkus and
-  Node.js services: a founding-team browser extension automating government
-  procurement notices, cutting days of drafting to minutes (TJMG); a legacy
-  JSF-to-Quarkus logistics migration with Angular front ends and Jenkins/GitLab
-  CI/CD (Usiminas); statewide school asset-tracking and hospital scheduling apps
-  (Prodemge); and an e-commerce restocking platform on Spring Boot microservices
-  with SOAP/WSDL integrations and SQL optimisation (Studio Z). The Bosch project
-  ran entirely in English — requirements, refinements, estimations and sprint
-  reviews.
+  Studio Z, e-commerce (2021–2024): built Java / Spring Boot microservices with
+  SAP and SOAP / WSDL integrations and Red Hat OpenShift deployments in a Scrum
+  team; engineered and optimised complex SQL queries for the restocking
+  platform, increasing query speed by 40%; defined and led enhancement
+  packages. Bosch (2022): requirements, refinements, estimations and sprint
+  reviews in English, delivering with TypeScript, Node.js, Next.js and MongoDB.
+  Prodemge (2023): statewide school asset-tracking and hospital scheduling
+  applications with Java and Vue.js. Usiminas (2024–25): migrated legacy JSF
+  logistics systems to Java / Quarkus services with Angular front ends and
+  CI/CD on Jenkins and GitLab. TJMG (2025): founding team of a browser
+  extension that automates government procurement notices, with a React front
+  end and Spring Boot APIs, cutting drafting from days to minutes; managed the
+  CI/CD lifecycle with Jenkins and Red Hat OpenShift across development,
+  staging and production.
 stack:
   - Java
   - Spring Boot
   - Quarkus
-  - Angular
   - React / Next.js
+  - Angular
   - Vue.js
   - TypeScript
   - Node.js
-  - PostgreSQL
+  - SQL
   - MongoDB
+  - SAP · SOAP / WSDL
   - Jenkins / GitLab
-  - OpenShift
+  - Red Hat OpenShift
 translations:
   pt:
-    title: Engenheiro Full-Stack (Estágio → Sênior)
+    title: Engenheiro Full-Stack (Trainee → Analista de Desenvolvimento Sênior)
     context: >-
-      Consultoria de TI entregando software full-stack para clientes corporativos
-      e do setor público — Bosch (projeto internacional, em inglês), TJMG
-      (Tribunal de Justiça de Minas Gerais), Usiminas, Prodemge e Studio Z.
-      Evolução de estagiário a sênior ao longo do período, incluindo
-      planejamento de releases como Squad Leader.
+      Consultoria de TI entregando software full-stack para clientes
+      corporativos e do setor público: Studio Z (e-commerce), Bosch (projeto
+      internacional conduzido inteiramente em inglês), TJMG (Tribunal de Justiça
+      de Minas Gerais), Usiminas e Prodemge. Evolução de trainee a analista de
+      desenvolvimento sênior ao longo do período.
     ownership: >-
-      Construí front-ends React e Angular sobre serviços Java / Spring Boot /
-      Quarkus e Node.js: uma extensão de navegador, como time fundador, que
-      automatiza avisos de licitação pública, reduzindo dias de redação a minutos
-      (TJMG); a migração de sistemas legados de logística de JSF para Quarkus com
-      front-ends Angular e CI/CD com Jenkins/GitLab (Usiminas); aplicações
-      estaduais de rastreamento de patrimônio escolar e agendamento hospitalar
-      (Prodemge); e uma plataforma de reposição de e-commerce em microsserviços
-      Spring Boot com integrações SOAP/WSDL e otimização de SQL (Studio Z). O
-      projeto da Bosch foi conduzido inteiramente em inglês — requisitos,
-      refinamentos, estimativas e sprint reviews.
+      Studio Z, e-commerce (2021–2024): construí microsserviços Java / Spring
+      Boot com integrações SAP e SOAP / WSDL e implantações em Red Hat OpenShift,
+      em um time Scrum; projetei e otimizei consultas SQL complexas da
+      plataforma de reposição, com aumento de 40% na velocidade das consultas;
+      defini e conduzi pacotes de melhoria. Bosch (2022): requisitos,
+      refinamentos, estimativas e sprint reviews em inglês, entregando com
+      TypeScript, Node.js, Next.js e MongoDB. Prodemge (2023): aplicações
+      estaduais de controle de patrimônio escolar e agendamento hospitalar com
+      Java e Vue.js. Usiminas (2024–25): migração de sistemas legados de
+      logística em JSF para serviços Java / Quarkus com front-ends Angular e
+      CI/CD em Jenkins e GitLab. TJMG (2025): time fundador de uma extensão de
+      navegador que automatiza avisos de licitação pública, com front-end React
+      e APIs Spring Boot, reduzindo a redação de dias para minutos; gestão do
+      ciclo de CI/CD com Jenkins e Red Hat OpenShift em desenvolvimento,
+      homologação e produção.
   es:
-    title: Ingeniero Full-Stack (Prácticas → Senior)
+    title: Ingeniero Full-Stack (Trainee → Analista de Desarrollo Senior)
     context: >-
-      Consultora de TI entregando software full-stack para clientes corporativos
-      y del sector público — Bosch (proyecto internacional, en inglés), TJMG
-      (Tribunal de Justicia de Minas Gerais), Usiminas, Prodemge y Studio Z.
-      Evolución de practicante a senior a lo largo del período, incluida la
-      planificación de releases como Squad Leader.
+      Consultora de TI que entrega software full-stack para clientes
+      corporativos y del sector público: Studio Z (e-commerce), Bosch (proyecto
+      internacional llevado íntegramente en inglés), TJMG (Tribunal de Justicia
+      de Minas Gerais), Usiminas y Prodemge. Evolución de trainee a analista de
+      desarrollo senior a lo largo del período.
     ownership: >-
-      Construí front-ends React y Angular sobre servicios Java / Spring Boot /
-      Quarkus y Node.js: una extensión de navegador, como equipo fundador, que
-      automatiza avisos de licitación pública, reduciendo días de redacción a
-      minutos (TJMG); la migración de sistemas legados de logística de JSF a
-      Quarkus con front-ends Angular y CI/CD con Jenkins/GitLab (Usiminas);
-      aplicaciones estatales de seguimiento de activos escolares y programación
-      hospitalaria (Prodemge); y una plataforma de reposición de e-commerce en
-      microservicios Spring Boot con integraciones SOAP/WSDL y optimización de SQL
-      (Studio Z). El proyecto de Bosch se llevó a cabo íntegramente en inglés —
-      requisitos, refinamientos, estimaciones y sprint reviews.
+      Studio Z, e-commerce (2021–2024): construí microservicios Java / Spring
+      Boot con integraciones SAP y SOAP / WSDL y despliegues en Red Hat
+      OpenShift, en un equipo Scrum; diseñé y optimicé consultas SQL complejas
+      de la plataforma de reposición, con un aumento del 40% en la velocidad de
+      las consultas; definí y lideré paquetes de mejora. Bosch (2022):
+      requisitos, refinamientos, estimaciones y sprint reviews en inglés,
+      entregando con TypeScript, Node.js, Next.js y MongoDB. Prodemge (2023):
+      aplicaciones estatales de control de activos escolares y agenda
+      hospitalaria con Java y Vue.js. Usiminas (2024–25): migración de sistemas
+      heredados de logística en JSF a servicios Java / Quarkus con front-ends
+      Angular y CI/CD en Jenkins y GitLab. TJMG (2025): equipo fundador de una
+      extensión de navegador que automatiza avisos de licitación pública, con
+      front-end React y APIs Spring Boot, reduciendo la redacción de días a
+      minutos; gestión del ciclo de CI/CD con Jenkins y Red Hat OpenShift en
+      desarrollo, staging y producción.
 ---
