@@ -141,7 +141,7 @@ const en = {
   sys: {
     signal: 'Signal',
     hero: {
-      tags: ["Java · Spring Boot","Event-driven · RabbitMQ","React · TypeScript","Claude Code · AI agents","Open to international roles"],
+      tags: ["Java · Spring Boot","AWS · Distributed systems","Event-driven · RabbitMQ","React · TypeScript","Claude Code · AI agents","Open to international roles"],
       tagsLabel: 'Profile at a glance',
     },
     peak: {
@@ -321,7 +321,7 @@ const pt: Dict = {
   sys: {
     signal: 'Sinal',
     hero: {
-      tags: ["Java · Spring Boot","Orientado a eventos · RabbitMQ","React · TypeScript","Claude Code · agentes de IA","Aberto a vagas internacionais"],
+      tags: ["Java · Spring Boot","AWS · Sistemas distribuídos","Orientado a eventos · RabbitMQ","React · TypeScript","Claude Code · agentes de IA","Aberto a vagas internacionais"],
       tagsLabel: 'Perfil resumido',
     },
     peak: {
@@ -499,7 +499,7 @@ const es: Dict = {
   sys: {
     signal: 'Señal',
     hero: {
-      tags: ["Java · Spring Boot","Orientado a eventos · RabbitMQ","React · TypeScript","Claude Code · agentes de IA","Abierto a puestos internacionales"],
+      tags: ["Java · Spring Boot","AWS · Sistemas distribuidos","Orientado a eventos · RabbitMQ","React · TypeScript","Claude Code · agentes de IA","Abierto a puestos internacionales"],
       tagsLabel: 'Perfil de un vistazo',
     },
     peak: {
