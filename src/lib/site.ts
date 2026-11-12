@@ -27,8 +27,8 @@ export const site = {
 
   contact: {
     // Matches the résumé. TODO[contact]: move to a custom-domain address once the domain is set up.
-    email: 'viniciuseduardo0702@hotmail.com',
-    emailSubject: 'Contact via viniciussilva.dev',
+    email: 'viniciussilva.builds@gmail.com',
+    emailSubject: 'Contact via your website',
   },
 
   socials: {
@@ -36,11 +36,12 @@ export const site = {
     github: 'https://github.com/Vinicius-E',
   },
 
-  // One résumé per language (en-US / pt-BR / es-ES). Use resumeFor(lang) in components.
+  // Only the English résumé exists today; every locale links to it (labelled "PDF · EN").
+  // Add pt/es files here when real translated versions exist. Use resumeFor(lang) in components.
   resumes: {
     en: '/vinicius-silva-cv-en-us.pdf',
-    pt: '/vinicius-silva-cv-pt-br.pdf',
-    es: '/vinicius-silva-cv-es-es.pdf',
+    pt: '/vinicius-silva-cv-en-us.pdf',
+    es: '/vinicius-silva-cv-en-us.pdf',
   },
   resumePath: '/vinicius-silva-cv-en-us.pdf',
 
@@ -52,8 +53,10 @@ export const site = {
   knowsAbout: [
     'Java',
     'Spring Boot',
-    'Quarkus',
     'Backend Engineering',
+    'AI-Assisted Software Development',
+    'Model Context Protocol (MCP)',
+    'Docker',
     'Full-Stack Development',
     'Distributed Systems',
     'Event-Driven Architecture',
