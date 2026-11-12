@@ -1,18 +1,18 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PortfolioHero from './PortfolioHero.astro';
-import PortfolioCarousel from './PortfolioCarousel.astro';
+import PortfolioProjects from './PortfolioProjects.astro';
 import PortfolioCatalog from './PortfolioCatalog.astro';
 import { site } from '../../lib/site';
-import { portfolioUi } from '../../lib/portfolio-data';
+import { pageUi } from '../../lib/portfolio-index';
 import { getLangFromUrl, localizePath } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
-const ui = portfolioUi[lang];
+const ui = pageUi[lang];
 ---
 
-<BaseLayout title={`${ui.seoTitle} · ${site.name}`} description={ui.intro.slice(0, 200)} path={localizePath('/portfolio', lang)}>
+<BaseLayout title={`${ui.seoTitle} · ${site.name}`} description={ui.intro} path={localizePath('/portfolio', lang)}>
   <PortfolioHero />
-  <PortfolioCarousel />
+  <PortfolioProjects />
   <PortfolioCatalog />
 </BaseLayout>

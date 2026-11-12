@@ -1,0 +1,222 @@
+---
+/**
+ * Real projects, shown before the product suites. Each one separates what
+ * EXISTS from limits / roadmap. Data: src/lib/portfolio-index.ts.
+ */
+import { projects, pageUi } from '../../lib/portfolio-index';
+import { getLangFromUrl, localizePath } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const ui = pageUi[lang];
+const L = ui.l;
+---
+
+<section class="pj" id="projects" data-signal={ui.projects.label} aria-labelledby="pj-title">
+  <div class="wrap">
+    <header class="pj__head" data-reveal>
+      <p class="mono-label">{ui.projects.label}</p>
+      <h2 id="pj-title" class="pj__title">{ui.projects.heading}</h2>
+      <p class="pj__intro">{ui.projects.intro}</p>
+    </header>
+
+    <div class="pj__list">
+      {
+        projects.map((p, i) => {
+          const t = p.txt[lang];
+          const href = p.href ? (p.external ? p.href : p.href.startsWith('/work/') ? p.href : localizePath(p.href, lang)) : null;
+          return (
+            <article class="proj" id={`p-${p.slug}`} data-reveal>
+              <header class="proj__head">
+                <p class="proj__n" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')} · {p.glyph}
+                </p>
+                <p class="proj__tag">{t.tag}</p>
+                <h3 class="proj__title">{t.title}</h3>
+                <p class="proj__summary">{t.summary}</p>
+                {href && (
+                  <p class="proj__link">
+                    <a
+                      class="proj__cta"
+                      href={href}
+                      target={p.external ? '_blank' : undefined}
+                      rel={p.external ? 'noopener' : undefined}
+                      data-analytics="project_open"
+                      data-analytics-label={p.slug}
+                    >
+                      {p.external ? ui.visit : ui.caseLink}
+                      <span aria-hidden="true">{p.external ? ' ↗' : ' →'}</span>
+                      {p.external && <span class="sr-only"> ({ui.newTab})</span>}
+                    </a>
+                  </p>
+                )}
+                {p.shot && (
+                  <img class="proj__shot" src={p.shot.src} alt={p.shot.alt[lang]} width="1200" height="750" loading="lazy" decoding="async" />
+                )}
+              </header>
+              <dl class="proj__body">
+                <div>
+                  <dt>{L.problem}</dt>
+                  <dd>{t.problem}</dd>
+                </div>
+                <div>
+                  <dt>{L.built}</dt>
+                  <dd>{t.built}</dd>
+                </div>
+                <div>
+                  <dt>{L.stack}</dt>
+                  <dd class="proj__stack">{p.stack}</dd>
+                </div>
+                <div class="proj__state">
+                  <dt>{L.exists}</dt>
+                  <dd>{t.exists}</dd>
+                </div>
+                <div class="proj__state proj__state--plan">
+                  <dt>{L.limits}</dt>
+                  <dd>{t.limits}</dd>
+                </div>
+              </dl>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .pj {
+    padding-block: var(--section-y);
+  }
+  .pj__head {
+    max-width: var(--measure-wide);
+    margin-bottom: var(--space-6);
+  }
+  .pj__title {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.04;
+    margin: var(--space-2) 0 var(--space-3);
+    max-width: 20ch;
+  }
+  .pj__intro {
+    color: var(--color-ink-soft);
+    max-width: var(--measure);
+  }
+  .pj__list {
+    display: grid;
+    border-top: 1px solid var(--color-ink);
+  }
+  .proj {
+    display: grid;
+    gap: var(--space-5) var(--space-7);
+    padding-block: var(--space-7);
+    border-bottom: 1px solid var(--color-hairline);
+    scroll-margin-top: 96px;
+  }
+  .proj__n {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--color-accent);
+  }
+  .proj__tag {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+    line-height: 1.7;
+  }
+  .proj__title {
+    font-size: var(--step-2);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-top: var(--space-2);
+    text-wrap: balance;
+  }
+  .proj__summary {
+    margin-top: var(--space-3);
+    color: var(--color-ink-soft);
+    max-width: 46ch;
+  }
+  .proj__link {
+    margin-top: var(--space-4);
+  }
+  .proj__cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .proj__cta:hover {
+    color: var(--color-accent-strong);
+    border-bottom-color: currentColor;
+  }
+  .proj__shot {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+    margin-top: var(--space-5);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-md);
+    background: var(--color-raised);
+  }
+  .proj__body {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+  .proj__body > div {
+    display: grid;
+    gap: 4px var(--space-4);
+  }
+  .proj__body dt {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    padding-top: 0.25em;
+  }
+  .proj__body dd {
+    color: var(--color-ink-soft);
+    max-width: 64ch;
+  }
+  .proj__stack {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--color-ink);
+  }
+  /* exists vs. planned: same shape, different marker, never colour alone (the label says which) */
+  .proj__state dt {
+    color: var(--color-ok);
+  }
+  .proj__state--plan dt {
+    color: var(--color-warn);
+  }
+  .proj__state dd {
+    color: var(--color-ink);
+  }
+  @media (min-width: 860px) {
+    .proj {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    }
+    .proj__body > div {
+      grid-template-columns: 8.5rem minmax(0, 1fr);
+    }
+  }
+</style>

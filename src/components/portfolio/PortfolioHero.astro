@@ -5,33 +5,37 @@
  * separate portrait composition for phones. Decorative; the real navigation is
  * the filter chips and carousel below. Dots are clickable as a pointer shortcut.
  */
-import { portfolio, portfolioCategories, portfolioUi } from '../../lib/portfolio-data';
+import { projects, suites, pageUi } from '../../lib/portfolio-index';
 import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
-const ui = portfolioUi[lang];
+const ui = pageUi[lang];
 const t = useTranslations(lang);
-const cats = Object.keys(portfolioCategories) as (keyof typeof portfolioCategories)[];
+
+// Two clusters: real projects (accent) and product suites (each suite's own colour).
+const groups = [
+  { c: 'projects', label: ui.hubProjects, items: projects.map((p) => ({ slug: p.slug, a: 'var(--color-accent)' })) },
+  { c: 'suites', label: ui.hubSuites, items: suites.map((s) => ({ slug: s.item.slug, a: s.item.accent })) },
+];
 
 interface Layout { key: 'wide' | 'tall'; w: number; h: number; centers: [number, number][] }
 const layouts: Layout[] = [
-  { key: 'wide', w: 560, h: 720, centers: [[150, 140], [410, 140], [150, 360], [410, 360], [150, 580], [410, 580]] },
-  { key: 'tall', w: 420, h: 560, centers: [[110, 100], [310, 100], [110, 290], [310, 290], [110, 470], [310, 470]] },
+  { key: 'wide', w: 560, h: 720, centers: [[280, 200], [280, 500]] },
+  { key: 'tall', w: 420, h: 560, centers: [[210, 140], [210, 390]] },
 ];
 
 function build(l: Layout) {
-  const hubs = cats.map((c, i) => ({ c, x: l.centers[i][0], y: l.centers[i][1] }));
+  const hubs = groups.map((g, i) => ({ ...g, x: l.centers[i][0], y: l.centers[i][1] }));
   const stars: { x: number; y: number; slug: string; cat: string; a: string; hx: number; hy: number }[] = [];
-  hubs.forEach((h) => {
-    const items = portfolio.filter((p) => p.category === h.c);
-    items.forEach((p, j) => {
-      const ang = (j / items.length) * Math.PI * 2 - Math.PI / 2 + (h.x % 7) * 0.2;
-      const r = 40 + (j % 2) * 18;
-      stars.push({ x: Math.round(h.x + Math.cos(ang) * r), y: Math.round(h.y + Math.sin(ang) * r), slug: p.slug, cat: h.c, a: p.accent, hx: h.x, hy: h.y });
+  hubs.forEach((h, hi) => {
+    h.items.forEach((p, j) => {
+      const ang = (j / h.items.length) * Math.PI * 2 - Math.PI / 2 + hi * 0.5;
+      const r = 62 + (j % 2) * 20;
+      stars.push({ x: Math.round(h.x + Math.cos(ang) * r), y: Math.round(h.y + Math.sin(ang) * r), slug: p.slug, cat: h.c, a: p.a, hx: h.x, hy: h.y });
     });
   });
-  const hubEdges = hubs.map((h, i) => {
-    const n = hubs[(i + 1) % hubs.length];
+  const hubEdges = hubs.slice(0, -1).map((h, i) => {
+    const n = hubs[i + 1];
     return `M${h.x} ${h.y}L${n.x} ${n.y}`;
   });
   return { hubs, stars, hubEdges };
@@ -63,13 +67,15 @@ const built = layouts.map((l) => ({ l, ...build(l) }));
           {hubs.map((h) => (
             <g class="sky__hub" data-cat={h.c}>
               <circle cx={h.x} cy={h.y} r="9" />
-              <text x={h.x} y={h.y + (l.key === 'wide' ? 96 : 84)} text-anchor="middle">
-                {portfolioCategories[h.c][lang]}
+              <text x={h.x} y={h.y + (l.key === 'wide' ? 112 : 106)} text-anchor="middle">
+                {h.label}
               </text>
             </g>
           ))}
           {stars.map((s) => (
-            <circle class="sky__star" cx={s.x} cy={s.y} r="5.5" data-slug={s.slug} data-cat={s.cat} style={`--a:${s.a}`} />
+            <a href={`#p-${s.slug}`} tabindex="-1">
+              <circle class="sky__star" cx={s.x} cy={s.y} r="6.5" data-slug={s.slug} data-cat={s.cat} style={`--a:${s.a}`} />
+            </a>
           ))}
         </g>
       </svg>
@@ -80,7 +86,6 @@ const built = layouts.map((l) => ({ l, ...build(l) }));
     <p class="mono-label" data-reveal>{ui.label}</p>
     <h1 id="pf-title" class="pfhero__title">{ui.title}</h1>
     <p class="pfhero__intro">{ui.intro}</p>
-    <p class="pfhero__note">{ui.note}</p>
     <p class="pfhero__hint" aria-hidden="true">{t.sys.pf.hint}</p>
   </div>
 </section>

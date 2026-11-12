@@ -1,54 +1,68 @@
 ---
-/** All systems grouped by category, with staggered scroll reveals. Same data as the carousel. */
-import { portfolio, portfolioCategories } from '../../lib/portfolio-data';
-import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+/**
+ * Product suites: three suites (four modules each) that stay in the index, the
+ * Control Tower as a companion system, and a quiet archive line.
+ * Which suites are listed is decided in src/lib/portfolio-index.ts.
+ */
+import { portfolioCategories } from '../../lib/portfolio-data';
+import { suites, companion, archive, itemHref, pageUi } from '../../lib/portfolio-index';
+import { getLangFromUrl } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
-const demoHref = (href: string) => href + (href.includes('?') ? '&' : '?') + `lang=${lang}`;
-// Produtos com página de apresentação própria por idioma (hrefs); demos soltas (Torre de Controle) seguem recebendo ?lang=
-const itemHref = (p: { href: string; hrefs?: Record<string, string> }) => (p.hrefs ? p.hrefs[lang] : demoHref(p.href));
-const groups = (Object.keys(portfolioCategories) as (keyof typeof portfolioCategories)[]).map((c) => ({
-  id: c,
-  name: portfolioCategories[c][lang],
-  items: portfolio.filter((p) => p.category === c),
-}));
+const ui = pageUi[lang];
 ---
 
-<section class="cat" id="catalogue" data-signal={t.sys.pf.label} aria-labelledby="cat-title">
+<section class="cat" id="suites" data-signal={ui.suites.label} aria-labelledby="cat-title">
   <div class="wrap">
     <header class="cat__head" data-reveal>
-      <p class="mono-label">{t.sys.pf.label}</p>
-      <h2 id="cat-title" class="cat__title">{t.sys.pf.heading}</h2>
-      <p class="cat__intro">{t.sys.pf.intro}</p>
+      <p class="mono-label">{ui.suites.label}</p>
+      <h2 id="cat-title" class="cat__title">{ui.suites.heading}</h2>
+      <p class="cat__intro">{ui.suites.intro}</p>
     </header>
 
-    {
-      groups.map((g) => (
-        <div class="cat__group" data-cat={g.id}>
-          <h3 class="cat__name" data-reveal>
-            {g.name} <span>{g.items.length}</span>
-          </h3>
-          <ul class="cat__grid">
-            {g.items.map((p, i) => (
-              <li class="card" data-reveal style={`--a:${p.accent};--i:${i}`}>
-                <a class="card__link" href={itemHref(p)} target="_blank" rel="noopener">
-                  <span class="card__shot">
-                    <img src={`/portfolio/${p.slug}.webp`} width="1200" height="750" alt="" loading="lazy" decoding="async" />
-                  </span>
-                  <span class="card__body">
-                    <span class="card__logo" aria-hidden="true">{p.glyph}</span>
-                    <span class="card__title">{p.name}</span>
-                    <span class="card__summary">{p.txt[lang].summary}</span>
-                    <span class="card__cta">{t.sys.pf.open} <span aria-hidden="true">↗</span></span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))
-    }
+    <ul class="cat__grid">
+      {
+        suites.map(({ item: p, modules }, i) => (
+          <li class="card" id={`p-${p.slug}`} data-reveal style={`--a:${p.accent};--i:${i}`}>
+            <a class="card__link" href={itemHref(p, lang)} target="_blank" rel="noopener">
+              <span class="card__shot">
+                <img src={`/portfolio/${p.slug}.webp`} width="1200" height="750" alt="" loading="lazy" decoding="async" />
+              </span>
+              <span class="card__body">
+                <span class="card__niche">{portfolioCategories[p.category][lang]}</span>
+                <span class="card__title">{p.name}</span>
+                <span class="card__summary">{p.txt[lang].summary}</span>
+                <span class="card__mods">
+                  <span class="sr-only">{ui.l.modules}: </span>
+                  {modules.map((m) => <span class="card__mod">{m}</span>)}
+                </span>
+                <span class="card__cta">
+                  {ui.openSuite} <span aria-hidden="true">↗</span>
+                  <span class="sr-only"> ({ui.newTab})</span>
+                </span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="cat__extra" data-reveal>
+      {ui.companion}
+      <a href={itemHref(companion, lang)} target="_blank" rel="noopener">
+        {companion.name} <span aria-hidden="true">↗</span><span class="sr-only"> ({ui.newTab})</span>
+      </a>
+    </p>
+    <p class="cat__extra cat__extra--quiet" data-reveal>
+      {ui.archive}
+      {
+        archive.map((p) => (
+          <a href={itemHref(p, lang)} target="_blank" rel="noopener">
+            {p.name} <span aria-hidden="true">↗</span><span class="sr-only"> ({ui.newTab})</span>
+          </a>
+        ))
+      }
+    </p>
   </div>
 </section>
 
@@ -74,43 +88,24 @@ const groups = (Object.keys(portfolioCategories) as (keyof typeof portfolioCateg
     color: var(--color-ink-soft);
     max-width: var(--measure);
   }
-  .cat__group {
-    margin-top: var(--space-8);
-  }
-  .cat__name {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-3);
-    padding-bottom: var(--space-3);
-    margin-bottom: var(--space-5);
-    border-bottom: 1px solid var(--color-ink);
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-ink);
-  }
-  .cat__name span {
-    color: var(--color-accent);
-  }
   .cat__grid {
     list-style: none;
     padding: 0;
     display: grid;
     gap: var(--space-5);
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   }
   .card {
     transition-delay: calc(var(--i, 0) * 70ms);
+    scroll-margin-top: 96px;
   }
   .card__link {
     display: grid;
+    grid-template-rows: auto 1fr;
     height: 100%;
     color: inherit;
     text-decoration: none;
     border: 1px solid var(--color-hairline);
-    border-top: 3px solid var(--a);
     border-radius: var(--radius-md);
     background: var(--color-surface);
     overflow: hidden;
@@ -121,6 +116,9 @@ const groups = (Object.keys(portfolioCategories) as (keyof typeof portfolioCateg
     transform: translateY(-4px);
     border-color: var(--a);
     box-shadow: var(--shadow-raised);
+  }
+  .card__link:active {
+    transform: translateY(-1px);
   }
   .card__shot {
     display: block;
@@ -145,17 +143,12 @@ const groups = (Object.keys(portfolioCategories) as (keyof typeof portfolioCateg
     padding: var(--space-4);
     align-content: start;
   }
-  .card__logo {
-    display: grid;
-    place-items: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    background: var(--a);
-    color: #fff;
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 0.72rem;
+  .card__niche {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-steel);
   }
   .card__title {
     font-family: var(--font-display);
@@ -163,18 +156,48 @@ const groups = (Object.keys(portfolioCategories) as (keyof typeof portfolioCateg
     letter-spacing: -0.02em;
     font-size: var(--step-1);
     line-height: 1.1;
-    margin-top: 4px;
   }
   .card__summary {
     color: var(--color-ink-soft);
     font-size: var(--step--1);
   }
-  .card__cta {
+  .card__mods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
     margin-top: var(--space-2);
+  }
+  .card__mod {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-ink-soft);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-pill);
+    padding: 3px 10px;
+  }
+  .card__cta {
+    margin-top: var(--space-3);
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-accent);
+  }
+  .cat__extra {
+    margin-top: var(--space-6);
+    color: var(--color-ink-soft);
+    max-width: var(--measure);
+  }
+  .cat__extra--quiet {
+    margin-top: var(--space-3);
+    color: var(--color-steel);
+    font-size: var(--step--1);
+  }
+  .cat__extra a {
+    display: inline-block;
+    padding-block: 13px;
+    margin-left: 6px;
+    color: var(--color-accent);
+    white-space: nowrap;
   }
 </style>
