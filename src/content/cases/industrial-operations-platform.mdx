@@ -3,9 +3,10 @@ title: Industrial Operations Platform
 clientDisplay: Industrial Manufacturing Client
 location: Santa Catarina, Brazil
 summary: >-
-  A warehouse and operations platform for an injection-moulding manufacturer. It
-  began as a solution for managing storage and the finishing area and grew into
-  an operational system spanning web and mobile.
+  A modular, on-premise MES/WMS platform for an injection-moulding manufacturer.
+  It began as a solution for managing storage and the finishing area and grew
+  into warehouse management, production planning and a machine-monitoring pilot,
+  spanning web and mobile.
 role: Sole engineer, discovery to production
 timeline: null
 platforms:
@@ -47,11 +48,16 @@ today:
   - 2D and 3D visualisation of the physical layout
   - Web and mobile clients with synchronisation
   - Real-time updates across clients
+  - "Machine monitoring, pilot in validation on one machine: a Node.js edge app reads machine digital inputs and outputs every 300 ms (HTTP and Modbus-TCP), detects cycles with delay alerts at +10% / +15%, buffers offline in SQLite and resends automatically"
+  - Idempotent, sequence-validated event ingestion on the backend
+  - "Production planning (PCP): work-order lifecycle, per-machine drag-and-drop queue, PDF work-order import from the ERP, downtime and scrap tracking, live progress against target cycle time"
+  - "2,400+ automated tests: edge app (80+), backend (490+, JUnit 5 / Mockito) and UI (1,900+, Jest), written in an AI-assisted workflow with Claude Code and Codex"
+  - Documentation site for the client, with a plain-language user manual and a full API reference (OpenAPI)
 planned:
-  - Acquisition of physical signals from injection machines (ADAM / WISE devices)
-  - Production states, cycles and alarms
-  - Shop-floor dashboards
-  - PCP / production-order integration
+  - Scaling machine monitoring from the pilot machine to the full fleet
+  - Moving machine communication from HTTP to MQTT
+  - Multi-machine production planning
+  - OEE / MTBF / MTTR indicators
 ---
 
 import Banner from '../../components/case/Banner.astro';
@@ -224,18 +230,46 @@ moved and who moved it, and re-shape the storage structure themselves as the
 floor changes — without waiting on a release. The platform is in active use
 and continues to evolve with the operation.
 
-## Future evolution
+## Machine monitoring and production planning
 
-<Banner tone="warn" label="Not in production">
-The following is being explored with the client. It is **not** part of the
-running system and is not presented as a delivered capability.
+<Banner tone="warn" label="Pilot in validation">
+Machine monitoring runs on **one pilot machine** and is still being validated
+with the client. It is not presented as a fleet-wide capability.
 </Banner>
 
-- Acquisition of physical signals directly from the injection machines
-  (ADAM / WISE devices)
-- Production states, cycles and alarms derived from those signals
-- Shop-floor dashboards
-- Integration with production planning (PCP) and production orders
+- **Edge application (Node.js).** Reads the machine's digital inputs and
+  outputs every 300 ms over HTTP and Modbus-TCP, detects cycles, and raises
+  delay alerts at +10% and +15% over the target cycle time.
+- **Offline first.** Events are buffered in SQLite on the edge and resent
+  automatically when the connection returns.
+- **Idempotent ingestion.** The backend validates events by sequence, so a
+  resend never counts a cycle twice.
+- **Production planning (PCP).** Work-order lifecycle, a per-machine
+  drag-and-drop queue, PDF work-order import from the ERP, downtime and scrap
+  tracking, live progress against target cycle time, and completion estimates.
+
+## Tests and documentation
+
+The platform was built with an AI-assisted workflow (Claude Code and Codex) and
+carries 2,400+ automated tests: 80+ on the edge app, 490+ on the backend
+(JUnit 5 / Mockito) and 1,900+ on the UI (Jest).
+
+The client also has a documentation site: a user manual in plain language,
+built from the real screens, and a full API reference with the OpenAPI
+specification. Scope changes go through versioned proposals with acceptance
+criteria and change control.
+
+## Roadmap
+
+<Banner tone="warn" label="Planned, not built">
+The following is planned with the client. It is **not** part of the running
+system and is not presented as a delivered capability.
+</Banner>
+
+- Scaling machine monitoring from the pilot machine to the full fleet
+- Moving machine communication from HTTP to MQTT
+- Multi-machine production planning
+- OEE / MTBF / MTTR indicators
 
 The current architecture — events as the source of truth, a realtime channel
 already in place, a configurable structure model — was chosen partly so this
