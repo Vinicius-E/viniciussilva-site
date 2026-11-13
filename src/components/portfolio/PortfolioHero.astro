@@ -13,25 +13,41 @@ const ui = pageUi[lang];
 const t = useTranslations(lang);
 
 // Two clusters: real projects (accent) and product suites (each suite's own colour).
+const SHORT: Record<string, string> = {
+  hive: 'Hive',
+  'industrial-platform': 'MES / WMS',
+  paired: 'PAIRED',
+  'muriel-imoveis': 'Muriel Imóveis',
+  'escala-cor': 'Escala Cor',
+};
 const groups = [
-  { c: 'projects', label: ui.hubProjects, items: projects.map((p) => ({ slug: p.slug, a: 'var(--color-accent)' })) },
-  { c: 'suites', label: ui.hubSuites, items: suites.map((s) => ({ slug: s.item.slug, a: s.item.accent })) },
+  { c: 'projects', label: ui.hubProjects, items: projects.map((p) => ({ slug: p.slug, name: SHORT[p.slug] ?? p.slug, a: 'var(--color-accent)' })) },
+  { c: 'suites', label: ui.hubSuites, items: suites.map((s) => ({ slug: s.item.slug, name: s.item.name, a: s.item.accent })) },
 ];
 
 interface Layout { key: 'wide' | 'tall'; w: number; h: number; centers: [number, number][] }
 const layouts: Layout[] = [
-  { key: 'wide', w: 560, h: 720, centers: [[280, 200], [280, 500]] },
-  { key: 'tall', w: 420, h: 560, centers: [[210, 140], [210, 390]] },
+  { key: 'wide', w: 560, h: 720, centers: [[280, 190], [280, 530]] },
+  { key: 'tall', w: 420, h: 560, centers: [[210, 140], [210, 410]] },
 ];
 
 function build(l: Layout) {
   const hubs = groups.map((g, i) => ({ ...g, x: l.centers[i][0], y: l.centers[i][1] }));
-  const stars: { x: number; y: number; slug: string; cat: string; a: string; hx: number; hy: number }[] = [];
+  const stars: { x: number; y: number; slug: string; name: string; cat: string; a: string; hx: number; hy: number; lx: number; ly: number; anchor: string }[] = [];
+  const R = l.key === 'wide' ? 112 : 82;
   hubs.forEach((h, hi) => {
     h.items.forEach((p, j) => {
       const ang = (j / h.items.length) * Math.PI * 2 - Math.PI / 2 + hi * 0.5;
-      const r = 62 + (j % 2) * 20;
-      stars.push({ x: Math.round(h.x + Math.cos(ang) * r), y: Math.round(h.y + Math.sin(ang) * r), slug: p.slug, cat: h.c, a: p.a, hx: h.x, hy: h.y });
+      const r = R + (j % 2) * 14;
+      const cx = Math.cos(ang);
+      const sy = Math.sin(ang);
+      const x = Math.round(h.x + cx * r);
+      const y = Math.round(h.y + sy * r);
+      // label sits outside the ring, on the side the dot is on
+      const anchor = cx > 0.3 ? 'start' : cx < -0.3 ? 'end' : 'middle';
+      const lx = anchor === 'start' ? x + 16 : anchor === 'end' ? x - 16 : x;
+      const ly = anchor === 'middle' ? (sy < 0 ? y - 18 : y + 28) : y + 4;
+      stars.push({ x, y, slug: p.slug, name: p.name, cat: h.c, a: p.a, hx: h.x, hy: h.y, lx, ly, anchor });
     });
   });
   const hubEdges = hubs.slice(0, -1).map((h, i) => {
@@ -67,14 +83,17 @@ const built = layouts.map((l) => ({ l, ...build(l) }));
           {hubs.map((h) => (
             <g class="sky__hub" data-cat={h.c}>
               <circle cx={h.x} cy={h.y} r="9" />
-              <text x={h.x} y={h.y + (l.key === 'wide' ? 112 : 106)} text-anchor="middle">
+              <text x={h.x} y={h.y + 30} text-anchor="middle">
                 {h.label}
               </text>
             </g>
           ))}
           {stars.map((s) => (
-            <a href={`#p-${s.slug}`} tabindex="-1">
-              <circle class="sky__star" cx={s.x} cy={s.y} r="6.5" data-slug={s.slug} data-cat={s.cat} style={`--a:${s.a}`} />
+            <a class="sky__link" href={`#p-${s.slug}`} tabindex="-1" style={`--a:${s.a}`}>
+              <circle class="sky__hit" cx={s.x} cy={s.y} r="26" />
+              <circle class="sky__halo" cx={s.x} cy={s.y} r="13" />
+              <circle class="sky__star" cx={s.x} cy={s.y} r="7" data-slug={s.slug} data-cat={s.cat} />
+              <text class="sky__label" x={s.lx} y={s.ly} text-anchor={s.anchor}>{s.name}</text>
             </a>
           ))}
         </g>
@@ -126,11 +145,11 @@ const built = layouts.map((l) => ({ l, ...build(l) }));
     top: 0;
     right: 0;
     bottom: 0;
-    width: 46%;
+    width: 48%;
     height: 100%;
     overflow: visible;
-    mask-image: linear-gradient(to right, transparent 0%, #000 22%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 22%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 12%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 12%);
   }
   .pfhero__sky--tall {
     display: none;
@@ -165,7 +184,7 @@ const built = layouts.map((l) => ({ l, ...build(l) }));
   }
   .sky__hub text {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     fill: var(--color-ink-soft);
@@ -179,9 +198,65 @@ const built = layouts.map((l) => ({ l, ...build(l) }));
     cursor: pointer;
     transition: opacity var(--dur) var(--ease), r var(--dur) var(--ease);
   }
-  .sky__star:hover,
-  .sky__star.is-current {
-    r: 8;
+  /* each dot is a link: the invisible hit circle makes it easy to click or tap */
+  .sky__link {
+    pointer-events: auto;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .sky__hit {
+    fill: transparent;
+    pointer-events: all;
+  }
+  .sky__halo {
+    fill: var(--a);
+    opacity: 0.16;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity var(--dur) var(--ease), transform var(--dur-slow) var(--ease);
+  }
+  .sky__label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    fill: var(--color-ink);
+    paint-order: stroke;
+    stroke: var(--color-ground);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    transition: fill var(--dur) var(--ease);
+  }
+  .sky__link:hover .sky__halo {
+    opacity: 0.34;
+    transform: scale(1.5);
+  }
+  .sky__link:hover .sky__star {
+    r: 9;
+  }
+  .sky__link:hover .sky__label {
+    fill: var(--color-accent);
+  }
+  .sky__link:active .sky__halo {
+    transform: scale(1.15);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sky__halo {
+      animation: sky-breathe 3.6s var(--ease) infinite alternate;
+    }
+    .sky__link:nth-of-type(2n) .sky__halo {
+      animation-delay: -1.4s;
+    }
+    .sky__link:nth-of-type(3n) .sky__halo {
+      animation-delay: -2.6s;
+    }
+    @keyframes sky-breathe {
+      from {
+        opacity: 0.1;
+      }
+      to {
+        opacity: 0.26;
+      }
+    }
   }
   /* category filter dims everything else, then restores the chosen category */
   .pfhero[data-cat]:not([data-cat='all']) :is(.sky__star, .sky__edge, .sky__hub) {
@@ -220,6 +295,11 @@ const built = layouts.map((l) => ({ l, ...build(l) }));
     position: relative;
     z-index: 2;
     width: 100%;
+    pointer-events: none; /* let clicks through to the constellation behind the empty part of the column */
+  }
+  .pfhero__inner > * {
+    pointer-events: auto;
+    width: fit-content;
   }
   /* soft scrim: dims the constellation where the text sits */
   .pfhero__inner::before {
