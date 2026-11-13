@@ -13,6 +13,10 @@ const clamp = (v: number, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
 const rail = document.querySelector<HTMLElement>('[data-rail]');
 const readout = rail?.querySelector<HTMLElement>('.signal__readout') ?? null;
 const prefix = rail?.dataset.prefix ?? '';
+const index = rail?.querySelector<HTMLElement>('.signal__index') ?? null;
+const idxNum = index?.querySelector<HTMLElement>('.signal__num') ?? null;
+const idxOf = index?.querySelector<HTMLElement>('.signal__of') ?? null;
+const idxName = index?.querySelector<HTMLElement>('.signal__name') ?? null;
 const sections = Array.from(document.querySelectorAll<HTMLElement>('main [data-signal]'));
 const nodes = sections.map((sec) => {
   const el = document.createElement('i');
@@ -116,18 +120,32 @@ function frame() {
   const p = clamp(window.scrollY / docMax);
   if (rail) {
     rail.style.setProperty('--p', p.toFixed(4));
+    doc.style.setProperty('--p', p.toFixed(4)); // the left beam in .ambient follows the same progress
     let active = -1;
     nodes.forEach((n, i) => {
       const on = n.sec.getBoundingClientRect().top <= window.innerHeight * 0.45;
       n.el.classList.toggle('is-on', on);
       if (on) active = i;
     });
+    nodes.forEach((n, i) => n.el.classList.toggle('is-current', i === active));
     setStep(active);
     const label = active >= 0 ? nodes[active].sec.dataset.signal ?? '' : '';
-    if (readout && label !== shown) {
+    if (label !== shown) {
       shown = label;
-      readout.textContent = label ? `${prefix} · ${label}` : '';
-      readout.classList.toggle('is-shown', !!label);
+      if (readout) {
+        readout.textContent = label ? `${prefix} · ${label}` : '';
+        readout.classList.toggle('is-shown', !!label);
+      }
+      // wide screens: a section counter in the left gutter, replayed on every section change
+      if (index && idxNum && idxOf && idxName) {
+        idxNum.textContent = label ? String(active + 1).padStart(2, '0') : '';
+        idxOf.textContent = label ? `/ ${String(nodes.length).padStart(2, '0')}` : '';
+        idxName.textContent = label;
+        index.classList.toggle('is-shown', !!label);
+        index.classList.remove('is-swap');
+        void index.offsetWidth; // restart the swap animation
+        index.classList.add('is-swap');
+      }
     }
   }
   updatePeak();

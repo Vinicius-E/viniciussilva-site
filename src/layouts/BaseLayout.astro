@@ -33,11 +33,12 @@ const t = useTranslations(lang);
   <body>
     <a href="#main" class="skip-link">{t.a11y.skip}</a>
     <span id="top"></span>
-    <div class="ambient" aria-hidden="true"><i class="ambient__grid"></i><i class="ambient__glow"></i></div>
+    <div class="ambient" aria-hidden="true"><i class="ambient__grid"></i><i class="ambient__glow"></i><i class="ambient__beam"></i></div>
     <div class="signal" data-rail data-prefix={t.sys.signal} aria-hidden="true">
       <span class="signal__line"><span class="signal__fill"></span></span>
       <span class="signal__pulse"></span>
       <span class="signal__readout"></span>
+      <span class="signal__index"><b class="signal__num"></b><span class="signal__of"></span><span class="signal__name"></span></span>
     </div>
     <Header />
     <main id="main">

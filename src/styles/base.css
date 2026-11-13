@@ -362,3 +362,187 @@ samp {
     transition: none;
   }
 }
+
+/* =========================================================================
+   Depth pass: section bands, scroll-linked section fades and a stronger
+   left rail. Everything here is decoration: no content depends on it, and
+   reduced motion gets the static version.
+   ========================================================================= */
+
+/* ---- alternating tonal bands that fade in and out, so sections read as places ---- */
+main > section:not([data-hero]):nth-of-type(even) {
+  background: linear-gradient(
+    180deg,
+    transparent 0,
+    color-mix(in srgb, var(--color-surface) 78%, transparent) 16%,
+    color-mix(in srgb, var(--color-surface) 78%, transparent) 84%,
+    transparent 100%
+  );
+}
+/* an accent hairline that starts strong on the left and dissolves to the right */
+main > section:not([data-hero]) {
+  position: relative;
+}
+main > section:not([data-hero])::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--color-accent) 0,
+    color-mix(in srgb, var(--color-accent) 35%, transparent) 18%,
+    transparent 46%
+  );
+  pointer-events: none;
+}
+
+/* ---- sections dim as they leave and brighten as they arrive (scroll-linked, opacity only) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* arrival fades the content in; departure dims the whole section, band included.
+       Two elements, because one element cannot run both ranges on the same property. */
+    main > section:not([data-hero]) > .wrap {
+      animation: section-arrive linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+    main > section:not([data-hero]) {
+      animation: section-leave linear both;
+      animation-timeline: view();
+      animation-range: exit 45% exit 100%;
+    }
+    @keyframes section-arrive {
+      from {
+        opacity: 0.15;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    @keyframes section-leave {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0.2;
+      }
+    }
+  }
+}
+
+/* ---- left rail: glow on the trace, a halo on the current node ---- */
+.signal__fill {
+  background: linear-gradient(180deg, var(--color-accent), var(--color-accent-strong));
+  box-shadow: 0 0 14px 1px color-mix(in srgb, var(--color-accent) 55%, transparent);
+}
+.signal__pulse {
+  left: -4px;
+  width: 9px;
+  height: 9px;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--color-accent) 18%, transparent),
+    0 0 18px 4px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+.signal__node {
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur-slow) var(--ease);
+}
+.signal__node.is-current {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+/* ---- a soft light on the left edge that travels with the reading position ---- */
+.ambient__beam {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 64vmin;
+  height: 64vmin;
+  margin: -32vmin 0 0 -32vmin;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-accent) 20%, transparent), transparent);
+  opacity: 0.7;
+  transform: translate3d(0, calc(var(--p, 0) * 100vh), 0);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ambient__beam {
+    opacity: 1;
+  }
+}
+:root[data-theme='dark'] .ambient__beam {
+  opacity: 1;
+}
+
+/* ---- wide screens: a section counter in the empty left gutter ---- */
+.signal__index {
+  display: none;
+}
+@media (min-width: 1500px) {
+  .signal__readout {
+    display: none;
+  }
+  .signal__index {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    display: grid;
+    gap: 2px;
+    width: max-content;
+    max-width: calc((100vw - var(--shell)) / 2 - 56px);
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity var(--dur-slow) var(--ease);
+  }
+  .signal__index.is-shown {
+    opacity: 1;
+  }
+  .signal__num {
+    font-family: var(--font-display);
+    font-size: clamp(3.4rem, 5vw, 5.4rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-accent);
+  }
+  .signal__of {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    color: var(--color-steel);
+  }
+  .signal__name {
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .signal__index.is-swap .signal__num {
+      animation: index-swap 520ms var(--ease) both;
+    }
+    .signal__index.is-swap .signal__name {
+      animation: index-swap 520ms var(--ease) 80ms both;
+    }
+    @keyframes index-swap {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+}
