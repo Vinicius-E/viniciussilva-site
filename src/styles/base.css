@@ -546,3 +546,25 @@ main > section:not([data-hero])::before {
     }
   }
 }
+
+/* ---- browser scrollbar in the accent colour, matching the left rail ---- */
+html {
+  scrollbar-color: var(--color-accent) color-mix(in srgb, var(--color-hairline) 60%, transparent);
+}
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    background: color-mix(in srgb, var(--color-hairline) 60%, transparent);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+    border-radius: 999px;
+    border: 3px solid var(--color-ground);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent-strong);
+  }
+}
