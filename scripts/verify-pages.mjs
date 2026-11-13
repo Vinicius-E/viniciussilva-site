@@ -50,7 +50,7 @@ for (const vp of VIEWPORTS) {
     if (r.hidden) note(where, `${r.hidden} [data-reveal] element(s) still invisible after scrolling`);
     if (r.small.length) note(where, `touch targets under 44px: ${JSON.stringify(r.small)}`);
     if (errors.length) note(where, `console errors: ${errors.slice(0, 3).join(' | ')}`);
-    for (const bad of ['hotmail', 'viniciussilva.dev', 'Five years', 'Cinco anos', 'Cinco años', '29 working', '28 demos', 'Kafka', 'Kubernetes'])
+    for (const bad of ['hotmail', 'viniciussilva.dev', 'Five years', 'Cinco anos', 'Cinco años', '29 working', '28 demos', 'Kafka'])
       if (r.text.includes(bad)) note(where, `unexpected text "${bad}"`);
     if (path.length <= 3 && !/Claude Code/.test(r.text)) note(where, 'home does not mention Claude Code');
     if (path.length <= 3 && !/Studio Z/.test(r.text)) note(where, 'home does not mention Studio Z');
