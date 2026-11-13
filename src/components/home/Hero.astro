@@ -26,6 +26,12 @@ const meshes: { key: 'wide' | 'tall'; mesh: Mesh }[] = [
         preserveAspectRatio={key === 'wide' ? 'xMaxYMid slice' : 'xMidYMid slice'}
         aria-hidden="true"
         focusable="false"
+        data-mesh
+        data-edges={JSON.stringify(
+          mesh.edges
+            .filter((e) => !mesh.nodes[e.a].far && !mesh.nodes[e.b].far)
+            .map((e) => [mesh.nodes[e.a].x, mesh.nodes[e.a].y, mesh.nodes[e.b].x, mesh.nodes[e.b].y, e.a, e.b]),
+        )}
       >
         <g class="mesh__layer mesh__layer--far" style="--k: 0.55">
           {mesh.edges
@@ -81,6 +87,76 @@ const meshes: { key: 'wide' | 'tall'; mesh: Mesh }[] = [
     {t.sys.hero.tags.map((tag) => <li>{tag}</li>)}
   </ul>
 </section>
+
+<script>
+  /* Event pulses take random walks over the mesh instead of looping on fixed edges:
+     each pulse picks a free edge, travels it, then usually continues from the node it
+     reached (like a message being routed) or rests and starts somewhere else.
+     Without JS, or under reduced motion, the static CSS pulses stay as they are. */
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rnd = (a: number, b: number) => a + Math.random() * (b - a);
+
+  if (!calm && 'animate' in Element.prototype) {
+    for (const svg of document.querySelectorAll<SVGSVGElement>('[data-mesh]')) {
+      const edges: number[][] = JSON.parse(svg.dataset.edges ?? '[]');
+      const pulses = Array.from(svg.querySelectorAll<SVGPathElement>('.mesh__pulse'));
+      if (!edges.length || !pulses.length) continue;
+      svg.classList.add('mesh--live');
+
+      const byNode = new Map<number, number[]>();
+      edges.forEach((e, i) => {
+        for (const n of [e[4], e[5]]) byNode.set(n, [...(byNode.get(n) ?? []), i]);
+      });
+      const busy = new Set<number>();
+      let visible = true;
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(([entry]) => (visible = entry.isIntersecting)).observe(svg);
+      }
+
+      const run = (path: SVGPathElement, from?: number) => {
+        // idle while the hero is off screen, the tab is hidden, or this composition is not displayed
+        if (!visible || document.hidden || svg.getBoundingClientRect().width === 0) {
+          window.setTimeout(() => run(path), 1500);
+          return;
+        }
+        let options = from === undefined ? [] : (byNode.get(from) ?? []).filter((i) => !busy.has(i));
+        if (!options.length) {
+          from = undefined;
+          options = edges.map((_, i) => i).filter((i) => !busy.has(i));
+        }
+        if (!options.length) {
+          window.setTimeout(() => run(path), 800);
+          return;
+        }
+        const i = options[Math.floor(Math.random() * options.length)];
+        const e = edges[i];
+        busy.add(i);
+        const forward = from === undefined ? Math.random() < 0.5 : e[4] === from;
+        const [x1, y1, x2, y2] = forward ? [e[0], e[1], e[2], e[3]] : [e[2], e[3], e[0], e[1]];
+        const reached = forward ? e[5] : e[4];
+        const len = Math.hypot(x2 - x1, y2 - y1) || 1;
+        const dash = Math.min(40, Math.max(8, 1500 / len)); // about the same visible length on every edge
+        path.setAttribute('d', `M${x1} ${y1}L${x2} ${y2}`);
+        path.style.strokeDasharray = `${dash} 100`;
+        const anim = path.animate(
+          [
+            { strokeDashoffset: dash, opacity: 0 },
+            { opacity: 1, offset: 0.12 },
+            { opacity: 1, offset: 0.88 },
+            { strokeDashoffset: -100, opacity: 0 },
+          ],
+          { duration: len * rnd(14, 24), easing: 'linear', fill: 'both' },
+        );
+        anim.onfinish = () => {
+          busy.delete(i);
+          if (Math.random() < 0.65) run(path, reached);
+          else window.setTimeout(() => run(path), rnd(400, 2800));
+        };
+      };
+      pulses.forEach((p) => window.setTimeout(() => run(p), rnd(0, 3000)));
+    }
+  }
+</script>
 
 <style>
   .hero {
@@ -192,6 +268,11 @@ const meshes: { key: 'wide' | 'tall'; mesh: Mesh }[] = [
       to {
         stroke-dashoffset: 0;
       }
+    }
+    /* JS took over: pulses are driven by random walks (see the script above) */
+    .mesh--live .mesh__pulse {
+      animation: none;
+      opacity: 0;
     }
   }
   @media (prefers-reduced-motion: reduce) {
