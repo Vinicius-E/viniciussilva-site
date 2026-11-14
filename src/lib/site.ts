@@ -9,7 +9,7 @@ export const site = {
   legalName: 'Vinicius Eduardo da Silva',
 
   // Canonical origin. Change here AND in astro.config.mjs (`SITE`) when a custom domain is set.
-  url: 'https://viniciussilva-site.viniciussilva-site.workers.dev',
+  url: 'https://viniciussilva.pages.dev',
 
   // Prose copy (positioning, availability, meta description, location label) is
   // per-locale in src/i18n/ui.ts. Only language-neutral facts live here.

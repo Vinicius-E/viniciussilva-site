@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 // Used for canonical URLs, sitemap, JSON-LD and absolute OG image URLs.
 // Keep in sync with src/lib/site.ts (`site.url`). Swap both when a custom domain is set.
-const SITE = 'https://viniciussilva-site.viniciussilva-site.workers.dev';
+const SITE = 'https://viniciussilva.pages.dev';
 
 // https://astro.build/config
 export default defineConfig({
